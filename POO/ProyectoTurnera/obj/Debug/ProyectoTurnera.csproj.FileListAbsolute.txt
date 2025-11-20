@@ -1,0 +1,10 @@
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\bin\Debug\ProyectoTurnera.exe.config
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\bin\Debug\ProyectoTurnera.exe
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\bin\Debug\ProyectoTurnera.pdb
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.csproj.AssemblyReference.cache
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.RegistroPaciente.resources
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Properties.Resources.resources
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.csproj.GenerateResource.cache
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.csproj.CoreCompileInputs.cache
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.exe
+C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.pdb
