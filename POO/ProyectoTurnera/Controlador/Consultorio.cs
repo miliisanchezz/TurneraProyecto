@@ -8,5 +8,10 @@ namespace ProyectoTurnera.Controlador
 {
     internal class Consultorio
     {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Direccion {  get; set; }
+
+
     }
 }

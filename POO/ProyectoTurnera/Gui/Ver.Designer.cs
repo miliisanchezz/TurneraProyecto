@@ -39,7 +39,7 @@
             this.buttonCargarPaciente.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonCargarPaciente.Cursor = System.Windows.Forms.Cursors.AppStarting;
             this.buttonCargarPaciente.Font = new System.Drawing.Font("Sitka Heading", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonCargarPaciente.Location = new System.Drawing.Point(453, 349);
+            this.buttonCargarPaciente.Location = new System.Drawing.Point(348, 352);
             this.buttonCargarPaciente.Name = "buttonCargarPaciente";
             this.buttonCargarPaciente.Size = new System.Drawing.Size(70, 36);
             this.buttonCargarPaciente.TabIndex = 10;
@@ -49,7 +49,7 @@
             // radioButton3
             // 
             this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(262, 279);
+            this.radioButton3.Location = new System.Drawing.Point(19, 129);
             this.radioButton3.Name = "radioButton3";
             this.radioButton3.Size = new System.Drawing.Size(138, 17);
             this.radioButton3.TabIndex = 9;
@@ -60,7 +60,7 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(262, 231);
+            this.radioButton2.Location = new System.Drawing.Point(19, 81);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(138, 17);
             this.radioButton2.TabIndex = 8;
@@ -71,7 +71,7 @@
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(262, 188);
+            this.radioButton1.Location = new System.Drawing.Point(19, 38);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(128, 17);
             this.radioButton1.TabIndex = 7;

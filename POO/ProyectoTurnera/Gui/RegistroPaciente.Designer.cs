@@ -103,6 +103,7 @@
             this.buttonCargarPaciente.TabIndex = 15;
             this.buttonCargarPaciente.Text = "Ingresar";
             this.buttonCargarPaciente.UseVisualStyleBackColor = false;
+            this.buttonCargarPaciente.Click += new System.EventHandler(this.buttonCargarPaciente_Click);
             // 
             // textBoxObraSocial
             // 
