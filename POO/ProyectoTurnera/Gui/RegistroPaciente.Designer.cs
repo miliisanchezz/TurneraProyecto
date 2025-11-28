@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonVolver = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -36,21 +36,23 @@
             this.buttonCargarPaciente = new System.Windows.Forms.Button();
             this.textBoxObraSocial = new System.Windows.Forms.TextBox();
             this.textBoxDNI = new System.Windows.Forms.TextBox();
-            this.textBoxApellidoPaciente = new System.Windows.Forms.TextBox();
-            this.textBoxNombrePaciente = new System.Windows.Forms.TextBox();
+            this.textBoxApellido = new System.Windows.Forms.TextBox();
+            this.textBoxNombre = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // button1
+            // buttonVolver
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button1.Font = new System.Drawing.Font("Sitka Heading", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(333, 319);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(70, 36);
-            this.button1.TabIndex = 20;
-            this.button1.Text = "Atrás";
-            this.button1.UseVisualStyleBackColor = false;
+            this.buttonVolver.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonVolver.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonVolver.Font = new System.Drawing.Font("Sitka Heading", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonVolver.Location = new System.Drawing.Point(320, 319);
+            this.buttonVolver.Name = "buttonVolver";
+            this.buttonVolver.Size = new System.Drawing.Size(99, 36);
+            this.buttonVolver.TabIndex = 20;
+            this.buttonVolver.Text = "Volver";
+            this.buttonVolver.UseVisualStyleBackColor = false;
+            this.buttonVolver.Click += new System.EventHandler(this.buttonVolver_Click);
             // 
             // label4
             // 
@@ -97,12 +99,13 @@
             this.buttonCargarPaciente.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonCargarPaciente.Cursor = System.Windows.Forms.Cursors.AppStarting;
             this.buttonCargarPaciente.Font = new System.Drawing.Font("Sitka Heading", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonCargarPaciente.Location = new System.Drawing.Point(333, 277);
+            this.buttonCargarPaciente.Location = new System.Drawing.Point(320, 277);
             this.buttonCargarPaciente.Name = "buttonCargarPaciente";
-            this.buttonCargarPaciente.Size = new System.Drawing.Size(70, 36);
+            this.buttonCargarPaciente.Size = new System.Drawing.Size(99, 36);
             this.buttonCargarPaciente.TabIndex = 15;
-            this.buttonCargarPaciente.Text = "Ingresar";
+            this.buttonCargarPaciente.Text = "Registrarse";
             this.buttonCargarPaciente.UseVisualStyleBackColor = false;
+            this.buttonCargarPaciente.Click += new System.EventHandler(this.buttonCargarPaciente_Click);
             // 
             // textBoxObraSocial
             // 
@@ -124,25 +127,36 @@
             this.textBoxDNI.TabIndex = 13;
             this.textBoxDNI.Text = "Ingrese DNI";
             // 
-            // textBoxApellidoPaciente
+            // textBoxApellido
             // 
-            this.textBoxApellidoPaciente.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxApellidoPaciente.ForeColor = System.Drawing.SystemColors.ActiveBorder;
-            this.textBoxApellidoPaciente.Location = new System.Drawing.Point(353, 139);
-            this.textBoxApellidoPaciente.Name = "textBoxApellidoPaciente";
-            this.textBoxApellidoPaciente.Size = new System.Drawing.Size(259, 24);
-            this.textBoxApellidoPaciente.TabIndex = 12;
-            this.textBoxApellidoPaciente.Text = "Ingrese apellido";
+            this.textBoxApellido.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxApellido.ForeColor = System.Drawing.SystemColors.ActiveBorder;
+            this.textBoxApellido.Location = new System.Drawing.Point(353, 139);
+            this.textBoxApellido.Name = "textBoxApellido";
+            this.textBoxApellido.Size = new System.Drawing.Size(259, 24);
+            this.textBoxApellido.TabIndex = 12;
+            this.textBoxApellido.Text = "Ingrese apellido";
             // 
-            // textBoxNombrePaciente
+            // textBoxNombre
             // 
-            this.textBoxNombrePaciente.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxNombrePaciente.ForeColor = System.Drawing.SystemColors.ActiveBorder;
-            this.textBoxNombrePaciente.Location = new System.Drawing.Point(353, 99);
-            this.textBoxNombrePaciente.Name = "textBoxNombrePaciente";
-            this.textBoxNombrePaciente.Size = new System.Drawing.Size(259, 24);
-            this.textBoxNombrePaciente.TabIndex = 11;
-            this.textBoxNombrePaciente.Text = "Ingrese nombre";
+            this.textBoxNombre.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxNombre.ForeColor = System.Drawing.SystemColors.ActiveBorder;
+            this.textBoxNombre.Location = new System.Drawing.Point(353, 99);
+            this.textBoxNombre.Name = "textBoxNombre";
+            this.textBoxNombre.Size = new System.Drawing.Size(259, 24);
+            this.textBoxNombre.TabIndex = 11;
+            this.textBoxNombre.Text = "Ingrese nombre";
+            this.textBoxNombre.TextChanged += new System.EventHandler(this.textBoxNombre_TextChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Sitka Heading", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(12, 9);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(94, 30);
+            this.label8.TabIndex = 38;
+            this.label8.Text = "Paciente:";
             // 
             // RegistroPaciente
             // 
@@ -150,7 +164,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.buttonVolver);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -158,10 +173,11 @@
             this.Controls.Add(this.buttonCargarPaciente);
             this.Controls.Add(this.textBoxObraSocial);
             this.Controls.Add(this.textBoxDNI);
-            this.Controls.Add(this.textBoxApellidoPaciente);
-            this.Controls.Add(this.textBoxNombrePaciente);
+            this.Controls.Add(this.textBoxApellido);
+            this.Controls.Add(this.textBoxNombre);
             this.Name = "RegistroPaciente";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.RegistroPaciente_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -169,7 +185,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonVolver;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
@@ -177,7 +193,8 @@
         private System.Windows.Forms.Button buttonCargarPaciente;
         private System.Windows.Forms.TextBox textBoxObraSocial;
         private System.Windows.Forms.TextBox textBoxDNI;
-        private System.Windows.Forms.TextBox textBoxApellidoPaciente;
-        private System.Windows.Forms.TextBox textBoxNombrePaciente;
+        private System.Windows.Forms.TextBox textBoxApellido;
+        private System.Windows.Forms.TextBox textBoxNombre;
+        private System.Windows.Forms.Label label8;
     }
 }

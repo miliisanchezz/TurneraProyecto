@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace ProyectoTurnera.Gui
 {
-    public partial class Form1 : Form
+    public partial class Ingresar_como : Form
     {
-        public Form1()
+        public Ingresar_como()
         {
             InitializeComponent();
         }

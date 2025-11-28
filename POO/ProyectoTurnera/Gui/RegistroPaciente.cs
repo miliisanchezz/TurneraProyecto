@@ -16,5 +16,13 @@ namespace ProyectoTurnera.Gui
         {
             InitializeComponent();
         }
+
+        private void buttonCargarPaciente_Click(object sender, EventArgs e)
+        {
+            Ver ventana = new Ver();
+            ventana.Show();
+
+            this.Close();
+        }
     }
 }
