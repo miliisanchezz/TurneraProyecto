@@ -106,41 +106,41 @@
             // 
             // textBoxObraSocial
             // 
-            this.textBoxObraSocial.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxObraSocial.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxObraSocial.ForeColor = System.Drawing.SystemColors.ActiveBorder;
-            this.textBoxObraSocial.Location = new System.Drawing.Point(353, 215);
+            this.textBoxObraSocial.Location = new System.Drawing.Point(353, 212);
             this.textBoxObraSocial.Name = "textBoxObraSocial";
-            this.textBoxObraSocial.Size = new System.Drawing.Size(259, 25);
+            this.textBoxObraSocial.Size = new System.Drawing.Size(259, 24);
             this.textBoxObraSocial.TabIndex = 14;
             this.textBoxObraSocial.Text = "Ingrese obra social";
             // 
             // textBoxDNI
             // 
-            this.textBoxDNI.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxDNI.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxDNI.ForeColor = System.Drawing.SystemColors.ActiveBorder;
             this.textBoxDNI.Location = new System.Drawing.Point(353, 176);
             this.textBoxDNI.Name = "textBoxDNI";
-            this.textBoxDNI.Size = new System.Drawing.Size(259, 25);
+            this.textBoxDNI.Size = new System.Drawing.Size(259, 24);
             this.textBoxDNI.TabIndex = 13;
             this.textBoxDNI.Text = "Ingrese DNI";
             // 
             // textBoxApellidoPaciente
             // 
-            this.textBoxApellidoPaciente.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxApellidoPaciente.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxApellidoPaciente.ForeColor = System.Drawing.SystemColors.ActiveBorder;
             this.textBoxApellidoPaciente.Location = new System.Drawing.Point(353, 139);
             this.textBoxApellidoPaciente.Name = "textBoxApellidoPaciente";
-            this.textBoxApellidoPaciente.Size = new System.Drawing.Size(259, 25);
+            this.textBoxApellidoPaciente.Size = new System.Drawing.Size(259, 24);
             this.textBoxApellidoPaciente.TabIndex = 12;
             this.textBoxApellidoPaciente.Text = "Ingrese apellido";
             // 
             // textBoxNombrePaciente
             // 
-            this.textBoxNombrePaciente.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxNombrePaciente.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxNombrePaciente.ForeColor = System.Drawing.SystemColors.ActiveBorder;
             this.textBoxNombrePaciente.Location = new System.Drawing.Point(353, 99);
             this.textBoxNombrePaciente.Name = "textBoxNombrePaciente";
-            this.textBoxNombrePaciente.Size = new System.Drawing.Size(259, 25);
+            this.textBoxNombrePaciente.Size = new System.Drawing.Size(259, 24);
             this.textBoxNombrePaciente.TabIndex = 11;
             this.textBoxNombrePaciente.Text = "Ingrese nombre";
             // 

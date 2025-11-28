@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ProyectoTurnera
+namespace ProyectoTurnera.Gui
 {
-    public partial class IngresoMedico : Form
+    public partial class RegistroMedico : Form
     {
-        public IngresoMedico()
+        public RegistroMedico()
         {
             InitializeComponent();
         }
