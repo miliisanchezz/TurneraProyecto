@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProyectoTurnera.Gui;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +17,8 @@ namespace ProyectoTurnera
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new IngresoMedico());
+            Application.Run(new Ingresar_como());
+
         }
     }
 }

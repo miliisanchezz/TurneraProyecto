@@ -16,5 +16,24 @@ namespace ProyectoTurnera.Gui
         {
             InitializeComponent();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnPaciente_Click(object sender, EventArgs e)
+        {
+            IngresoPaciente form = new IngresoPaciente();
+            form.Show();
+            this.Hide();
+        }
+
+        private void btnMedico_Click(object sender, EventArgs e)
+        {
+            IngresoMedico form = new IngresoMedico();
+            form.Show();
+            this.Hide();
+        }
     }
 }
