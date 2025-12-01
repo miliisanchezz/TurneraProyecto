@@ -78,6 +78,7 @@
             this.Controls.Add(this.label1);
             this.Name = "Ingresar_como";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Ingresar_como_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

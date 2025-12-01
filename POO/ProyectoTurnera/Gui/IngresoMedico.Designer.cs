@@ -44,12 +44,13 @@
             this.comboObra = new System.Windows.Forms.ComboBox();
             this.buttonRegistrar = new System.Windows.Forms.Button();
             this.comboEspecialidad = new System.Windows.Forms.ComboBox();
+            this.buttonAtras = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textDni
             // 
             this.textDni.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.textDni.Location = new System.Drawing.Point(403, 135);
+            this.textDni.Location = new System.Drawing.Point(403, 128);
             this.textDni.Name = "textDni";
             this.textDni.Size = new System.Drawing.Size(209, 20);
             this.textDni.TabIndex = 21;
@@ -58,7 +59,7 @@
             // textApellido
             // 
             this.textApellido.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.textApellido.Location = new System.Drawing.Point(403, 93);
+            this.textApellido.Location = new System.Drawing.Point(403, 86);
             this.textApellido.Name = "textApellido";
             this.textApellido.Size = new System.Drawing.Size(209, 20);
             this.textApellido.TabIndex = 20;
@@ -66,7 +67,7 @@
             // textNombre
             // 
             this.textNombre.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.textNombre.Location = new System.Drawing.Point(403, 52);
+            this.textNombre.Location = new System.Drawing.Point(403, 45);
             this.textNombre.Name = "textNombre";
             this.textNombre.Size = new System.Drawing.Size(209, 20);
             this.textNombre.TabIndex = 18;
@@ -76,7 +77,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(206, 170);
+            this.label5.Location = new System.Drawing.Point(206, 163);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(111, 28);
             this.label5.TabIndex = 17;
@@ -86,7 +87,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(206, 127);
+            this.label3.Location = new System.Drawing.Point(206, 120);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(39, 28);
             this.label3.TabIndex = 16;
@@ -96,7 +97,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(206, 85);
+            this.label2.Location = new System.Drawing.Point(206, 78);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 28);
             this.label2.TabIndex = 15;
@@ -106,7 +107,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(206, 44);
+            this.label1.Location = new System.Drawing.Point(206, 37);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(77, 28);
             this.label1.TabIndex = 14;
@@ -118,14 +119,15 @@
             this.Paciente.Font = new System.Drawing.Font("Sitka Heading", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Paciente.Location = new System.Drawing.Point(13, 11);
             this.Paciente.Name = "Paciente";
-            this.Paciente.Size = new System.Drawing.Size(98, 35);
+            this.Paciente.Size = new System.Drawing.Size(88, 35);
             this.Paciente.TabIndex = 13;
-            this.Paciente.Text = "Paciente";
+            this.Paciente.Text = "Medico";
+            this.Paciente.Click += new System.EventHandler(this.Paciente_Click);
             // 
             // textPrecio
             // 
             this.textPrecio.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.textPrecio.Location = new System.Drawing.Point(403, 261);
+            this.textPrecio.Location = new System.Drawing.Point(403, 254);
             this.textPrecio.Name = "textPrecio";
             this.textPrecio.Size = new System.Drawing.Size(209, 20);
             this.textPrecio.TabIndex = 27;
@@ -133,7 +135,7 @@
             // textMatricula
             // 
             this.textMatricula.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.textMatricula.Location = new System.Drawing.Point(403, 219);
+            this.textMatricula.Location = new System.Drawing.Point(403, 212);
             this.textMatricula.Name = "textMatricula";
             this.textMatricula.Size = new System.Drawing.Size(209, 20);
             this.textMatricula.TabIndex = 26;
@@ -142,7 +144,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(206, 296);
+            this.label4.Location = new System.Drawing.Point(206, 289);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(100, 28);
             this.label4.TabIndex = 25;
@@ -152,7 +154,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(206, 253);
+            this.label6.Location = new System.Drawing.Point(206, 246);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(174, 28);
             this.label6.TabIndex = 24;
@@ -162,7 +164,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(206, 211);
+            this.label7.Location = new System.Drawing.Point(206, 204);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(87, 28);
             this.label7.TabIndex = 23;
@@ -172,7 +174,7 @@
             // 
             this.comboObra.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.comboObra.FormattingEnabled = true;
-            this.comboObra.Location = new System.Drawing.Point(403, 304);
+            this.comboObra.Location = new System.Drawing.Point(403, 297);
             this.comboObra.Name = "comboObra";
             this.comboObra.Size = new System.Drawing.Size(209, 21);
             this.comboObra.TabIndex = 30;
@@ -181,7 +183,7 @@
             // buttonRegistrar
             // 
             this.buttonRegistrar.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonRegistrar.Location = new System.Drawing.Point(350, 352);
+            this.buttonRegistrar.Location = new System.Drawing.Point(350, 340);
             this.buttonRegistrar.Name = "buttonRegistrar";
             this.buttonRegistrar.Size = new System.Drawing.Size(104, 46);
             this.buttonRegistrar.TabIndex = 31;
@@ -193,11 +195,22 @@
             // 
             this.comboEspecialidad.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.comboEspecialidad.FormattingEnabled = true;
-            this.comboEspecialidad.Location = new System.Drawing.Point(403, 177);
+            this.comboEspecialidad.Location = new System.Drawing.Point(403, 170);
             this.comboEspecialidad.Name = "comboEspecialidad";
             this.comboEspecialidad.Size = new System.Drawing.Size(209, 21);
             this.comboEspecialidad.TabIndex = 32;
             this.comboEspecialidad.SelectedIndexChanged += new System.EventHandler(this.comboEspecialidad_SelectedIndexChanged);
+            // 
+            // buttonAtras
+            // 
+            this.buttonAtras.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonAtras.Location = new System.Drawing.Point(350, 392);
+            this.buttonAtras.Name = "buttonAtras";
+            this.buttonAtras.Size = new System.Drawing.Size(104, 46);
+            this.buttonAtras.TabIndex = 40;
+            this.buttonAtras.Text = "Atrás";
+            this.buttonAtras.UseVisualStyleBackColor = true;
+            this.buttonAtras.Click += new System.EventHandler(this.buttonAtras_Click);
             // 
             // IngresoMedico
             // 
@@ -205,6 +218,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.buttonAtras);
             this.Controls.Add(this.comboEspecialidad);
             this.Controls.Add(this.buttonRegistrar);
             this.Controls.Add(this.comboObra);
@@ -246,5 +260,6 @@
         private System.Windows.Forms.ComboBox comboObra;
         private System.Windows.Forms.Button buttonRegistrar;
         private System.Windows.Forms.ComboBox comboEspecialidad;
+        private System.Windows.Forms.Button buttonAtras;
     }
 }

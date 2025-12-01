@@ -38,6 +38,7 @@
             this.textDni = new System.Windows.Forms.TextBox();
             this.buttonRegistrar = new System.Windows.Forms.Button();
             this.comboObra = new System.Windows.Forms.ComboBox();
+            this.buttonAtras = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Paciente
@@ -117,7 +118,7 @@
             // buttonRegistrar
             // 
             this.buttonRegistrar.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonRegistrar.Location = new System.Drawing.Point(342, 348);
+            this.buttonRegistrar.Location = new System.Drawing.Point(340, 326);
             this.buttonRegistrar.Name = "buttonRegistrar";
             this.buttonRegistrar.Size = new System.Drawing.Size(104, 46);
             this.buttonRegistrar.TabIndex = 32;
@@ -135,12 +136,24 @@
             this.comboObra.TabIndex = 36;
             this.comboObra.SelectedIndexChanged += new System.EventHandler(this.comboObra_SelectedIndexChanged_1);
             // 
+            // buttonAtras
+            // 
+            this.buttonAtras.Font = new System.Drawing.Font("Sitka Heading", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonAtras.Location = new System.Drawing.Point(340, 378);
+            this.buttonAtras.Name = "buttonAtras";
+            this.buttonAtras.Size = new System.Drawing.Size(104, 46);
+            this.buttonAtras.TabIndex = 39;
+            this.buttonAtras.Text = "Atrás";
+            this.buttonAtras.UseVisualStyleBackColor = true;
+            this.buttonAtras.Click += new System.EventHandler(this.buttonAtras_Click);
+            // 
             // IngresoPaciente
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.buttonAtras);
             this.Controls.Add(this.comboObra);
             this.Controls.Add(this.buttonRegistrar);
             this.Controls.Add(this.textDni);
@@ -171,5 +184,6 @@
         private System.Windows.Forms.TextBox textDni;
         private System.Windows.Forms.Button buttonRegistrar;
         private System.Windows.Forms.ComboBox comboObra;
+        private System.Windows.Forms.Button buttonAtras;
     }
 }

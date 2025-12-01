@@ -101,6 +101,15 @@
   <ItemGroup>
     <Compile Include="Controlador\BD.cs" />
     <Compile Include="Controlador\Consultorio.cs" />
+    <Compile Include="Gui\frmAdministrador.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\frmMedico.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\frmPaciente.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Controlador\Medico.cs" />
     <Compile Include="Controlador\Paciente.cs" />
     <Compile Include="Controlador\Turno.cs" />
@@ -128,6 +137,12 @@
     <Compile Include="Gui\IngresoPaciente.Designer.cs">
       <DependentUpon>IngresoPaciente.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Gui\PanelMedico.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -140,10 +155,25 @@
     <Compile Include="Gui\PanelPaciente.Designer.cs">
       <DependentUpon>PanelPaciente.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\Reportes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Reportes.Designer.cs">
+      <DependentUpon>Reportes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Gui\frmAdministrador.resx">
+      <DependentUpon>frmAdministrador.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\frmMedico.resx">
+      <DependentUpon>frmMedico.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Gui\AgregarTurno.resx">
       <DependentUpon>AgregarTurno.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\frmPaciente.resx">
+      <DependentUpon>frmPaciente.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\Ingresar_como.resx">
       <DependentUpon>Ingresar_como.cs</DependentUpon>
@@ -160,6 +190,9 @@
     <EmbeddedResource Include="Gui\PanelPaciente.resx">
       <DependentUpon>PanelPaciente.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Reportes.resx">
+      <DependentUpon>Reportes.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -170,6 +203,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\Mysqlx.Sql.StmtExecute.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

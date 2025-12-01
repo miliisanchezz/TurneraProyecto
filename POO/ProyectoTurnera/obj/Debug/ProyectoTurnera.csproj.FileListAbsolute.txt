@@ -54,3 +54,7 @@ C:\Users\Valentin\source\repos\POO\ProyectoTurnera\bin\Debug\System.Numerics.Vec
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\bin\Debug\System.Threading.Tasks.Extensions.xml
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\Proyecto.DA6632E8.Up2Date
+C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.Reportes.resources
+C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.frmAdministrador.resources
+C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.frmMedico.resources
+C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.frmPaciente.resources

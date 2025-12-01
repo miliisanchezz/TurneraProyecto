@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 public static class BD
 {
-    public static string cadena = "server=localhost; database=turnera; uid=root; pwd=;";
+    public static string cadena = "server=localhost; database=turnera; uid=usuario; pwd=clave";
 
     public static void Ejecutar(string sql)
     {

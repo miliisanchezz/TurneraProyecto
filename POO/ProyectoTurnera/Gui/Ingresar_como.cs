@@ -35,5 +35,10 @@ namespace ProyectoTurnera.Gui
             form.Show();
             this.Hide();
         }
+
+        private void Ingresar_como_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

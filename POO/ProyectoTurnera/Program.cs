@@ -1,24 +1,19 @@
-﻿using ProyectoTurnera.Gui;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Forms;
+using ProyectoTurnera.Gui;
 
 namespace ProyectoTurnera
 {
-    internal static class Program
+    static class Program
     {
-        /// <summary>
-        /// Punto de entrada principal para la aplicación.
-        /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Ingresar_como());
 
+            // Iniciar con la pantalla de login
+            Application.Run(new LoginForm());
         }
     }
 }

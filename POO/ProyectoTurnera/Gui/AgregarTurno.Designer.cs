@@ -50,7 +50,6 @@
             this.comboHora.Name = "comboHora";
             this.comboHora.Size = new System.Drawing.Size(214, 21);
             this.comboHora.TabIndex = 0;
-            this.comboHora.Text = "Seleccione un horario";
             // 
             // comboMedico
             // 
@@ -59,7 +58,6 @@
             this.comboMedico.Name = "comboMedico";
             this.comboMedico.Size = new System.Drawing.Size(214, 21);
             this.comboMedico.TabIndex = 2;
-            this.comboMedico.Text = "Seleccione un medico";
             // 
             // comboEspecialidad
             // 
@@ -68,7 +66,6 @@
             this.comboEspecialidad.Name = "comboEspecialidad";
             this.comboEspecialidad.Size = new System.Drawing.Size(214, 21);
             this.comboEspecialidad.TabIndex = 3;
-            this.comboEspecialidad.Text = "Seleccione una especialidad";
             this.comboEspecialidad.SelectedIndexChanged += new System.EventHandler(this.comboEspecialidades_SelectedIndexChanged);
             // 
             // dateTimePicker1

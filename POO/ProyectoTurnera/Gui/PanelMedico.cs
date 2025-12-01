@@ -25,7 +25,7 @@ namespace ProyectoTurnera.Gui
                  "JOIN Consultorios C ON T.IdConsultorio = C.IdConsultorio " +
                  "WHERE T.IdMedico = " + lblIdMedico.Text;
 
-            verMedico.DataSource = BD.Consultar(sql);
+            //verMedico.DataSource = BD.Consultar(sql);
         }
 
         private void verTurnos_CellContentClick(object sender, DataGridViewCellEventArgs e)
