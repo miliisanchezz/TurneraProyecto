@@ -143,7 +143,7 @@ namespace ProyectoTurnera.Gui
                                     nextForm = new frmMedico();
                                     break;
                                 case "paciente":
-                                    nextForm = new frmPaciente();
+                                    nextForm = new frmPaciente(id);
                                     break;
                                 default:
                                     nextForm = null;
