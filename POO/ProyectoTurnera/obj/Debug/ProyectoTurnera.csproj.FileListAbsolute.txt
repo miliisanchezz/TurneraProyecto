@@ -9,12 +9,6 @@ C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurne
 C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.exe
 C:\Users\Alumno\source\repos\Mili510\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.pdb
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.csproj.AssemblyReference.cache
-C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.AgregarTurno.resources
-C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.Ingresar_como.resources
-C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.IngresoMedico.resources
-C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.IngresoPaciente.resources
-C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.PanelMedico.resources
-C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.PanelPaciente.resources
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Properties.Resources.resources
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.csproj.GenerateResource.cache
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.csproj.CoreCompileInputs.cache
@@ -54,7 +48,4 @@ C:\Users\Valentin\source\repos\POO\ProyectoTurnera\bin\Debug\System.Numerics.Vec
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\bin\Debug\System.Threading.Tasks.Extensions.xml
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\Proyecto.DA6632E8.Up2Date
-C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.Reportes.resources
 C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.frmAdministrador.resources
-C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.frmMedico.resources
-C:\Users\Valentin\source\repos\POO\ProyectoTurnera\obj\Debug\ProyectoTurnera.Gui.frmPaciente.resources

@@ -5,12 +5,13 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using ProyectoTurnera.Controlador;
 
 namespace ProyectoTurnera.Gui
 {
     public class frmPaciente : Form
     {
-        private readonly int pacienteId;
+        private readonly Paciente paciente;
 
         // UI
         private TabControl tabControl;
@@ -28,16 +29,13 @@ namespace ProyectoTurnera.Gui
         private DataGridView dgvDisponibles;
         private Button btnReservarTurno;
 
-        public frmPaciente(int pacienteId)
+        public frmPaciente(Paciente pacientelogueado)
         {
-            this.pacienteId = pacienteId;
+            this.paciente = pacientelogueado;
             InitializeComponents();
             LoadPendientes();
             LoadEspecialidades();
         }
-
-        // Keep parameterless constructor for designer/backwards compatibility if needed
-        public frmPaciente() : this(0) { }
 
         private void InitializeComponents()
         {
@@ -126,7 +124,7 @@ namespace ProyectoTurnera.Gui
         {
             try
             {
-                if (pacienteId <= 0)
+                if (paciente.Id <= 0)
                 {
                     dgvPendientes.DataSource = null;
                     return;
@@ -160,7 +158,7 @@ namespace ProyectoTurnera.Gui
                 using (var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn))
                 using (var da = new MySql.Data.MySqlClient.MySqlDataAdapter(cmd))
                 {
-                    cmd.Parameters.AddWithValue("@pacienteId", pacienteId);
+                    cmd.Parameters.AddWithValue("@pacienteId", paciente.Id);
                     cmd.Parameters.AddWithValue("@start", start);
                     var dt = new DataTable();
                     da.Fill(dt);
@@ -218,7 +216,7 @@ namespace ProyectoTurnera.Gui
                 int? prestadorPacienteId = null;
                 try
                 {
-                    var dtPac = BD.Consultar($"SELECT Prestador FROM pacientes WHERE Id = {pacienteId} LIMIT 1");
+                    var dtPac = BD.Consultar($"SELECT Prestador FROM pacientes WHERE Id = {paciente.Id} LIMIT 1");
                     if (dtPac != null && dtPac.Rows.Count > 0 && dtPac.Rows[0]["Prestador"] != DBNull.Value)
                     {
                         int parsed;
@@ -299,14 +297,14 @@ namespace ProyectoTurnera.Gui
 
                 // Get PrestadorPaciente value from pacientes table (if exists)
                 string prestadorPaciente = "NULL";
-                DataTable dtPac = BD.Consultar($"SELECT Prestador FROM pacientes WHERE Id = {pacienteId}");
+                DataTable dtPac = BD.Consultar($"SELECT Prestador FROM pacientes WHERE Id = {paciente.Id}");
                 if (dtPac != null && dtPac.Rows.Count > 0 && dtPac.Rows[0]["Prestador"] != DBNull.Value && dtPac.Rows[0]["Prestador"] != null)
                 {
                     prestadorPaciente = dtPac.Rows[0]["Prestador"].ToString();
                 }
 
                 // Update turnos to assign paciente
-                string sql = $"UPDATE turnos SET Paciente = {pacienteId}, PrestadorPaciente = {prestadorPaciente} WHERE Id = {turnoId}";
+                string sql = $"UPDATE turnos SET Paciente = {paciente.Id}, PrestadorPaciente = {prestadorPaciente} WHERE Id = {turnoId}";
                 BD.Ejecutar(sql);
 
                 MessageBox.Show("Turno reservado correctamente.", "Ok", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -347,7 +345,7 @@ namespace ProyectoTurnera.Gui
                         continue;
 
                     int id = Convert.ToInt32(r.Cells["Id"].Value);
-                    string sql = $"DELETE FROM turnos WHERE Id = {id}";
+                    string sql = $"UPDATE turnos SET Paciente = null, PrestadorPaciente = null WHERE Id = {id}";
                     BD.Ejecutar(sql);
                 }
 

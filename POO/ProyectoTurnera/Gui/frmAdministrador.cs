@@ -1,14 +1,26 @@
+ï»¿using ProyectoTurnera.Controller;
+using ProyectoTurnera.Data;
+using ProyectoTurnera.Gui.Helpers;
+using ProyectoTurnera.Model;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ProyectoTurnera.Gui
 {
     public class frmAdministrador : Form
     {
+
+        private readonly Administrador administrador;
+
+        private readonly AdministradorController _administradorController = new AdministradorController();
+        private readonly PrestadorController _prestadorController = new PrestadorController();
+        private readonly EspecialidadController _especialidadController = new EspecialidadController();
+        private readonly ConsultorioController _consultorioController = new ConsultorioController();
+
         private TabControl tabControl1;
         private TabPage tabPrestadores;
         private TabPage tabPacientes;
@@ -44,6 +56,17 @@ namespace ProyectoTurnera.Gui
         private CheckBox chkViernes;
         private Button btnGenerateTurnos;
 
+        private Panel pnlReportParams;
+        private ComboBox cbReportMedico;
+        private DateTimePicker dtpReportFrom;
+        private DateTimePicker dtpReportTo;
+        private CheckBox chkReportShowDetail;
+        private Button btnRunReport;
+
+        private Panel pnlReportResults;
+        private DataGridView dgvReportResults;
+        private Label lblReportTotal;
+
 
         // Columns that must be forced to uppercase
         private static readonly HashSet<string> UppercaseColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -53,35 +76,44 @@ namespace ProyectoTurnera.Gui
             "Direccion"
         };
 
-        public frmAdministrador()
+        public frmAdministrador(Administrador administradorlogueado)
         {
+
+            this.administrador = administradorlogueado;
+
             InitializeComponents();
+
             LoadPrestadores();
-            LoadPacientes();
-            LoadMedicos();
             LoadEspecialidades();
             LoadConsultorios();
-            //LoadTurnos();
-            LoadAdministradores();
+            LoadAdministradores(); 
+
+            /**
+            
+            LoadPacientes();
+            LoadMedicos();
+            **/
         }
 
         private void InitializeComponents()
         {
-            Text = "Administrador";
+
+            this.Text  = "Administrador :: " + this.administrador.NombreCompleto;
+
             StartPosition = FormStartPosition.CenterScreen;
             Size = new Size(800, 600);
             FormBorderStyle = FormBorderStyle.Sizable;
             MaximizeBox = true;
             MinimizeBox = true;
 
-            tabControl1 = new TabControl
+            TabControl tabControl1 = new TabControl
             {
                 Dock = DockStyle.Fill
             };
 
             tabPrestadores = new TabPage("Prestadores");
             tabPacientes = new TabPage("Pacientes");
-            tabMedicos = new TabPage("Médicos");
+            tabMedicos = new TabPage("MÃ©dicos");
             tabEspecialidades = new TabPage("Especialidades");
             tabConsultorios = new TabPage("Consultorios");
             tabTurnos = new TabPage("Turnos");
@@ -116,16 +148,24 @@ namespace ProyectoTurnera.Gui
             Controls.Add(tabControl1);
 
             // Conectar handlers CRUD a las grillas que usan tablas
-            AttachCrudHandlers(dgvEspecialidades, "especialidades", LoadEspecialidades);
             AttachCrudHandlers(dgvPrestadores, "prestadores", LoadPrestadores);
-            AttachCrudHandlers(dgvPacientes, "pacientes", LoadPacientes);
-            AttachCrudHandlers(dgvMedicos, "medicos", LoadMedicos);
+            AttachCrudHandlers(dgvEspecialidades, "especialidades", LoadEspecialidades);
             AttachCrudHandlers(dgvConsultorios, "consultorios", LoadConsultorios);
             AttachCrudHandlers(dgvAdministradores, "administradores", LoadAdministradores);
 
+            /**
+
+            AttachCrudHandlers(dgvPacientes, "pacientes", LoadPacientes);
+            AttachCrudHandlers(dgvMedicos, "medicos", LoadMedicos);
+            
+            
+
             SetupTurnosTab();
 
+            SetupReportTab();*/
+
             this.FormClosed += FrmAdministrador_FormClosed;
+
         }
 
         private void FrmAdministrador_FormClosed(object sender, FormClosedEventArgs e)
@@ -174,7 +214,7 @@ namespace ProyectoTurnera.Gui
 
                     var real = cell.Value?.ToString() ?? "";
                     // show a fixed minimal mask length to avoid leaking length, or match length if acceptable
-                    var mask = new string('•', Math.Max(4, real.Length));
+                    var mask = new string('â€¢', Math.Max(4, real.Length));
                     e.Value = mask;
                     e.FormattingApplied = true;
                 }
@@ -230,9 +270,10 @@ namespace ProyectoTurnera.Gui
                 }
             };
 
-            // cuando termina la edición de una celda -> UPDATE columna específica
+            // cuando termina la ediciÃ³n de una celda -> UPDATE columna especÃ­fica
             dgv.CellEndEdit += (s, e) =>
             {
+                /**
                 try
                 {
                     if (e.RowIndex < 0 || e.ColumnIndex < 0)
@@ -272,7 +313,7 @@ namespace ProyectoTurnera.Gui
                     var idObj = row.Cells["Id"].Value;
                     if (idObj == null || idObj == DBNull.Value || string.IsNullOrWhiteSpace(idObj.ToString()))
                     {
-                        // fila nueva sin Id: no actualizar aquí (se insertará en RowValidated)
+                        // fila nueva sin Id: no actualizar aquÃ­ (se insertarÃ¡ en RowValidated)
                         return;
                     }
 
@@ -289,242 +330,282 @@ namespace ProyectoTurnera.Gui
                     string sqlValue = cellValue == null || cellValue == DBNull.Value ? "NULL" : $"'{EscapeSql(cellValue.ToString())}'";
 
                     string sql = $"UPDATE {tableName} SET {colName} = {sqlValue} WHERE Id = {id}";
-                    BD.Ejecutar(sql);
+                    Database.Ejecutar(sql);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error al actualizar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+                */
             };
 
-            // cuando se valida la fila (se completó una nueva fila) -> INSERT si no tiene Id
             dgv.RowValidated += (s, e) =>
             {
+                /**
                 try
                 {
                     var grid = (DataGridView)s;
+
                     if (e.RowIndex < 0 || e.RowIndex >= grid.Rows.Count)
                         return;
 
                     var row = grid.Rows[e.RowIndex];
 
-                    // Ignorar la fila nueva en edición (IsNewRow)
+                    // ignorar fila nueva
                     if (row.IsNewRow)
                         return;
 
-                    // Si hay columna Id y está vacía -> INSERT
-                    if (grid.Columns.Contains("Id"))
+                    //----------------------------------------------------------------------
+                    // 1) SI ES BINDINGLIST<T> â†’ usar Insert/Update del objeto (ORM-like)
+                    //----------------------------------------------------------------------
+                    var dsType = grid.DataSource?.GetType();
+
+                    if (dsType != null &&
+                        dsType.IsGenericType &&
+                        dsType.GetGenericTypeDefinition() == typeof(BindingList<>))
                     {
-                        var idObj = row.Cells["Id"].Value;
-                        if (idObj == null || idObj == DBNull.Value || string.IsNullOrWhiteSpace(idObj.ToString()))
+                        var obj = row.DataBoundItem;
+                        if (obj == null)
+                            return;
+
+                        var type = obj.GetType();
+
+                        // obtener propiedad Id
+                        var propId = type.GetProperty("Id");
+                        if (propId == null)
+                            return;
+
+                        int id = Convert.ToInt32(propId.GetValue(obj));
+
+                        // buscar mÃ©todos Insert y Update
+                        var insertMethod = type.GetMethod("Insert",
+                            System.Reflection.BindingFlags.Static |
+                            System.Reflection.BindingFlags.Public |
+                            System.Reflection.BindingFlags.NonPublic);
+
+                        var updateMethod = type.GetMethod("Update",
+                            System.Reflection.BindingFlags.Static |
+                            System.Reflection.BindingFlags.Public |
+                            System.Reflection.BindingFlags.NonPublic);
+
+                        //------------------------------------------------------------------
+                        // INSERT
+                        //------------------------------------------------------------------
+                        if (id == 0)
                         {
-                            // Construir columnas/valores para INSERT (excluir Id)
-                            var cols = "";
-                            var vals = "";
-                            foreach (DataGridViewColumn col in grid.Columns)
+                            if (insertMethod == null)
                             {
-                                var colName = col.DataPropertyName;
-                                if (string.IsNullOrWhiteSpace(colName))
-                                    colName = col.Name;
-
-                                if (string.Equals(colName, "Id", StringComparison.OrdinalIgnoreCase))
-                                    continue;
-
-                                // Omitir columnas virtuales
-                                if (col.Visible == false)
-                                    continue;
-
-                                // Guard against invalid column index
-                                if (col.Index < 0 || col.Index >= grid.Columns.Count)
-                                    continue;
-
-                                var cell = row.Cells[col.Index];
-                                var valueObj = cell.Value;
-
-                                // Force uppercase on configured columns prior to building INSERT
-                                if (valueObj != null && UppercaseColumns.Contains(colName))
-                                {
-                                    var upper = valueObj.ToString().ToUpperInvariant();
-                                    if (!string.Equals(valueObj.ToString(), upper, StringComparison.Ordinal))
-                                    {
-                                        cell.Value = upper;
-                                        valueObj = upper;
-                                    }
-                                }
-
-                                var value = valueObj;
-                                if (value == null || value == DBNull.Value || string.IsNullOrWhiteSpace(value.ToString()))
-                                {
-                                    // omitir columnas vacías en INSERT para permitir valores por defecto en BD
-                                    continue;
-                                }
-
-                                if (!string.IsNullOrEmpty(cols))
-                                {
-                                    cols += ", ";
-                                    vals += ", ";
-                                }
-
-                                cols += colName;
-                                vals += $"'{EscapeSql(value.ToString())}'";
+                                MessageBox.Show($"La clase {type.Name} no tiene Insert(...)");
+                                return;
                             }
 
-                            if (!string.IsNullOrWhiteSpace(cols))
-                            {
-                                string sql = $"INSERT INTO {tableName} ({cols}) VALUES ({vals})";
-                                BD.Ejecutar(sql);
-
-                                // recargar para obtener el Id asignado y sincronizar la grilla
-                                // defer reload to avoid modifying the grid while DataGridView is processing events
-                                grid.BeginInvoke((Action)(() => reloadAction?.Invoke()));
-                            }
+                            int newId = (int)insertMethod.Invoke(null, new object[] { obj });
+                            propId.SetValue(obj, newId); // actualizar en la BindingList
+                            return;
                         }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error al insertar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            };
 
-            // cuando se borra una fila desde la grilla -> DELETE
-            dgv.UserDeletingRow += (s, e) =>
-            {
-                try
-                {
-                    var grid = (DataGridView)s;
-                    var row = e.Row;
+                        //------------------------------------------------------------------
+                        // UPDATE
+                        //------------------------------------------------------------------
+                        if (updateMethod != null)
+                        {
+                            updateMethod.Invoke(null, new object[] { obj });
+                        }
+
+                        return;
+                    }
+
+                    return;
+
+                    //----------------------------------------------------------------------
+                    // 2) NO ES BINDINGLIST -> usar SQL genÃ©rico de INSERT / UPDATE
+                    //----------------------------------------------------------------------
                     if (!grid.Columns.Contains("Id"))
                         return;
 
-                    var idObj = row.Cells["Id"].Value;
-                    if (idObj == null || idObj == DBNull.Value || string.IsNullOrWhiteSpace(idObj.ToString()))
+                    var idCell = row.Cells["Id"].Value;
+                    bool isInsert = idCell == null ||
+                                    idCell == DBNull.Value ||
+                                    string.IsNullOrWhiteSpace(idCell.ToString());
+
+                    if (isInsert)
                     {
-                        // fila sin Id, nada que borrar en BD
+                        //-----------------------------------
+                        // INSERT SQL GENERICO
+                        //-----------------------------------
+                        string cols = "";
+                        string vals = "";
+
+                        foreach (DataGridViewColumn col in grid.Columns)
+                        {
+                            var colName = col.DataPropertyName;
+                            if (string.IsNullOrWhiteSpace(colName))
+                                colName = col.Name;
+
+                            // saltear ID
+                            if (colName.Equals("Id", StringComparison.OrdinalIgnoreCase))
+                                continue;
+
+                            // saltear columnas no visibles
+                            if (!col.Visible)
+                                continue;
+
+                            var cellVal = row.Cells[col.Index].Value;
+                            if (cellVal == null || cellVal == DBNull.Value)
+                                continue;
+
+                            if (!string.IsNullOrEmpty(cols))
+                            {
+                                cols += ", ";
+                                vals += ", ";
+                            }
+
+                            cols += colName;
+                            vals += $"'{EscapeSql(cellVal.ToString())}'";
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(cols))
+                        {
+                            string sql = $"INSERT INTO {tableName} ({cols}) VALUES ({vals})";
+                            Database.Ejecutar(sql);
+
+                            // cargar de nuevo para obtener el ID asignado
+                            grid.BeginInvoke((Action)(() => reloadAction?.Invoke()));
+                        }
+
                         return;
                     }
-
-                    var id = idObj.ToString();
-
-                    var confirm = MessageBox.Show("¿Eliminar registro seleccionado?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (confirm != DialogResult.Yes)
+                    else
                     {
-                        e.Cancel = true;
+                        return;
+                        //-----------------------------------
+                        // UPDATE SQL GENERICO
+                        //-----------------------------------
+                        string sets = "";
+
+                        foreach (DataGridViewColumn col in grid.Columns)
+                        {
+                            if (col.Name == "Id" || col.DataPropertyName == "Id")
+                                continue;
+
+                            var colName = col.DataPropertyName;
+                            if (string.IsNullOrWhiteSpace(colName))
+                                colName = col.Name;
+
+                            var val = row.Cells[col.Index].Value;
+                            if (val == null || val == DBNull.Value)
+                                continue;
+
+                            if (!string.IsNullOrEmpty(sets))
+                                sets += ", ";
+
+                            sets += $"{colName} = '{EscapeSql(val.ToString())}'";
+                        }
+
+                        string sql = $"UPDATE {tableName} SET {sets} WHERE Id = {idCell}";
+                        Database.Ejecutar(sql);
+
                         return;
                     }
-
-                    string sql = $"DELETE FROM {tableName} WHERE Id = {id}";
-                    BD.Ejecutar(sql);
-
-                    // defer reload to avoid modifying the grid while DataGridView is processing events
-                    grid.BeginInvoke((Action)(() => reloadAction?.Invoke()));
+                
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error al eliminar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    e.Cancel = true;
+                    MessageBox.Show("Error al guardar cambios: " + ex.Message);
                 }
+                **/
             };
+
         }
 
-        private string EscapeSql(string value)
-        {
-            return value?.Replace("'", "''") ?? "";
-        }
-
-        /// <summary>
-        /// Asegura que la columna "Id" sea visible y tenga propiedades adecuadas tras bindear el DataTable.
-        /// Por seguridad, la columna Id se expone pero queda en modo ReadOnly (no editable por el usuario).
-        /// </summary>
         private void ConfigureIdColumn(DataGridView dgv, bool visible = true, bool allowEdit = false)
         {
             if (dgv == null)
                 return;
 
-            // Si el DataSource es un DataTable o BindingSource, después del bind se crean las columnas automáticas.
-            // Asegurarnos de que la columna exista y ajustar propiedades.
             if (!dgv.Columns.Contains("Id"))
                 return;
 
             var col = dgv.Columns["Id"];
             col.Visible = visible;
-            col.ReadOnly = !allowEdit; // por defecto no editable (Id generalmente es PK/autoincrement)
+            col.ReadOnly = !allowEdit;
             col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             col.Width = Math.Max(50, col.Width);
-            // evitar que la columna se oculte por error por AutoSize si no se necesita
             col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-        }
-
-        private void LoadEspecialidades()
-        {
-            try
-            {
-                string sql = "SELECT Id AS Id, Nombre FROM especialidades";
-                DataTable dt = BD.Consultar(sql);
-
-                // Si la consulta retorna null o vacía, dejar la grilla vacía
-                if (dt == null)
-                {
-                    dgvEspecialidades.DataSource = null;
-                    return;
-                }
-
-                dgvEspecialidades.DataSource = dt;
-
-                // Asegurar que la columna Id sea visible (pero no editable)
-                ConfigureIdColumn(dgvEspecialidades, visible: true, allowEdit: false);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar especialidades: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
 
         }
 
         private void LoadPrestadores()
         {
-            try
-            {
-                string sql = "SELECT Id AS Id, Nombre FROM prestadores";
-                DataTable dt = BD.Consultar(sql);
+            BindingList<Prestador> prestadores = new BindingList<Prestador>(_prestadorController.ObtenerTodos());
 
-                // Si la consulta retorna null o vacía, dejar la grilla vacía
-                if (dt == null)
-                {
-                    dgvPrestadores.DataSource = null;
-                    return;
-                }
+            dgvPrestadores.DataSource = prestadores;
+            GridHelper.ConfigurarColumnasPrestadores(dgvPrestadores);
 
-                // Force Nombre/Apellido columns in the returned table to uppercase (if present)
-                UppercaseColumns.Intersect(dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName))
-                    .ToList()
-                    .ForEach(col => {
-                        foreach (DataRow r in dt.Rows)
-                        {
-                            if (r[col] != DBNull.Value && r[col] != null)
-                                r[col] = r[col].ToString().ToUpperInvariant();
-                        }
-                    });
+            ConfigureIdColumn(dgvPrestadores, visible: true, allowEdit: false);
 
-                dgvPrestadores.DataSource = dt;
+            GridHelper.HabilitarEliminacionConConfirmacion(dgvPrestadores, 
+                prestadores,
+                id => _prestadorController.Eliminar(id));
 
-                // Mostrar Id para referencia, mantenerlo ReadOnly
-                ConfigureIdColumn(dgvPrestadores, visible: true, allowEdit: false);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar prestadores: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
+        private void LoadEspecialidades()
+        {
+
+            BindingList<Especialidad> especialidades = new BindingList<Especialidad>(_especialidadController.ObtenerTodos());
+
+            dgvEspecialidades.DataSource = especialidades;
+            GridHelper.ConfigurarColumnasEspecialidades(dgvEspecialidades);
+
+            ConfigureIdColumn(dgvEspecialidades, visible: true, allowEdit: false);
+
+            GridHelper.HabilitarEliminacionConConfirmacion(dgvEspecialidades,
+                especialidades,
+                id => _especialidadController.Eliminar(id));
+
+        }
+
+        private void LoadConsultorios()
+        {
+
+            BindingList<Consultorio> consultorios = new BindingList<Consultorio>(_consultorioController.ObtenerTodos());
+
+            dgvConsultorios.DataSource = consultorios;
+            GridHelper.ConfigurarColumnasConsultorios(dgvConsultorios);
+
+            ConfigureIdColumn(dgvConsultorios, visible: true, allowEdit: false);
+
+            GridHelper.HabilitarEliminacionConConfirmacion(dgvConsultorios,
+                consultorios,
+                id => _consultorioController.Eliminar(id));
+
+        }
+
+        private void LoadAdministradores()
+        {
+            BindingList<Administrador> administradores = new BindingList<Administrador>(_administradorController.ObtenerTodos());
+
+            dgvAdministradores.DataSource = administradores;
+            GridHelper.ConfigurarColumnasPrestadores(dgvAdministradores);
+
+            ConfigureIdColumn(dgvAdministradores, visible: true, allowEdit: false);
+
+            GridHelper.HabilitarEliminacionConConfirmacion(dgvAdministradores,
+                administradores,
+                id => _administradorController.Eliminar(id));
+
+        }
+
+        /**
         private void LoadPacientes()
         {
             try
             {
                 string sql = "SELECT Id AS Id, Nombre, Apellido, DNI, Password, Prestador, Telefono FROM pacientes";
-                DataTable dt = BD.Consultar(sql);
+                DataTable dt = Database.Consultar(sql);
 
-                // Si la consulta retorna null o vacía, dejar la grilla vacía
+                // Si la consulta retorna null o vacÃ­a, dejar la grilla vacÃ­a
                 if (dt == null)
                 {
                     dgvPacientes.DataSource = null;
@@ -561,9 +642,9 @@ namespace ProyectoTurnera.Gui
             try
             {
                 string sql = "SELECT Id AS Id, Nombre, Apellido, DNI, Password, Especialidad, Matricula, Prestador, PrecioConsulta FROM medicos";
-                DataTable dt = BD.Consultar(sql);
+                DataTable dt = Database.Consultar(sql);
 
-                // Si la consulta retorna null o vacía, dejar la grilla vacía
+                // Si la consulta retorna null o vacÃ­a, dejar la grilla vacÃ­a
                 if (dt == null)
                 {
                     dgvMedicos.DataSource = null;
@@ -595,50 +676,14 @@ namespace ProyectoTurnera.Gui
             }
         }
 
-        private void LoadConsultorios()
-        {
-            try
-            {
-                string sql = "SELECT Id AS Id, Nombre, Direccion, NumeroConsultorio FROM consultorios";
-                DataTable dt = BD.Consultar(sql);
-
-                // Si la consulta retorna null o vacía, dejar la grilla vacía
-                if (dt == null)
-                {
-                    dgvConsultorios.DataSource = null;
-                    return;
-                }
-
-                // Force Nombre/Direccion uppercase in loaded data
-                UppercaseColumns.Intersect(dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName))
-                    .ToList()
-                    .ForEach(col => {
-                        foreach (DataRow r in dt.Rows)
-                        {
-                            if (r[col] != DBNull.Value && r[col] != null)
-                                r[col] = r[col].ToString().ToUpperInvariant();
-                        }
-                    });
-
-                dgvConsultorios.DataSource = dt;
-
-                // Mostrar Id para referencia, mantenerlo ReadOnly
-                ConfigureIdColumn(dgvConsultorios, visible: true, allowEdit: false);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar consultorios: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         private void LoadAdministradores()
         {
             try
             {
                 string sql = "SELECT Id AS Id, Nombre, Apellido, DNI, Password FROM administradores";
-                DataTable dt = BD.Consultar(sql);
+                DataTable dt = Database.Consultar(sql);
 
-                // Si la consulta retorna null o vacía, dejar la grilla vacía
+                // Si la consulta retorna null o vacÃ­a, dejar la grilla vacÃ­a
                 if (dt == null)
                 {
                     dgvAdministradores.DataSource = null;
@@ -673,7 +718,7 @@ namespace ProyectoTurnera.Gui
             try
             {
                 // Load prestadores (Id, Nombre)
-                DataTable dtPrestadores = BD.Consultar("SELECT Id, Nombre FROM prestadores");
+                DataTable dtPrestadores = Database.Consultar("SELECT Id, Nombre FROM prestadores");
                 if (dtPrestadores == null)
                     return;
 
@@ -720,7 +765,7 @@ namespace ProyectoTurnera.Gui
             try
             {
                 // Load prestadores (Id, Nombre)
-                DataTable dtEspecialidades = BD.Consultar("SELECT Id, Nombre FROM especialidades");
+                DataTable dtEspecialidades = Database.Consultar("SELECT Id, Nombre FROM especialidades");
                 if (dtEspecialidades == null)
                     return;
 
@@ -792,8 +837,8 @@ namespace ProyectoTurnera.Gui
             };
             btnLoadTurnos.Click += (s, e) => LoadTurnos();
 
-            // Generación inputs
-            var lblMed = new Label { Text = "Médico:", Left = 8, Top = dtpMonthYear.Bottom + 10, AutoSize = true };
+            // GeneraciÃ³n inputs
+            var lblMed = new Label { Text = "MÃ©dico:", Left = 8, Top = dtpMonthYear.Bottom + 10, AutoSize = true };
             cbMedicoTurnos = new ComboBox { Left = lblMed.Right + 8, Top = lblMed.Top - 3, Width = 180, DropDownStyle = ComboBoxStyle.DropDownList };
 
             var lblCons = new Label { Text = "Consultorio:", Left = cbMedicoTurnos.Right + 12, Top = lblMed.Top, AutoSize = true };
@@ -808,7 +853,7 @@ namespace ProyectoTurnera.Gui
             // Weekday checkboxes (Mon-Fri)
             chkLunes = new CheckBox { Text = "Lun", Left = dtpHoraFin.Right + 16, Top = lblHoraIni.Top - 3, AutoSize = true };
             chkMartes = new CheckBox { Text = "Mar", Left = chkLunes.Right + 3, Top = chkLunes.Top, AutoSize = true };
-            chkMiercoles = new CheckBox { Text = "Mié", Left = chkMartes.Right + 3, Top = chkLunes.Top, AutoSize = true };
+            chkMiercoles = new CheckBox { Text = "MiÃ©", Left = chkMartes.Right + 3, Top = chkLunes.Top, AutoSize = true };
             chkJueves = new CheckBox { Text = "Jue", Left = chkMiercoles.Right + 3, Top = chkLunes.Top, AutoSize = true };
             chkViernes = new CheckBox { Text = "Vie", Left = chkJueves.Right + 3, Top = chkLunes.Top, AutoSize = true };
 
@@ -843,6 +888,8 @@ namespace ProyectoTurnera.Gui
             dgvTurnos.Dock = DockStyle.Fill;
             pnlTurnosBottom.Controls.Add(dgvTurnos);
 
+            dgvTurnos.KeyDown += DgvTurnos_KeyDown;
+
             // Put panels into the tabTurnos page
             tabTurnos.Controls.Add(pnlTurnosBottom);
             tabTurnos.Controls.Add(pnlTurnosTop);
@@ -856,11 +903,73 @@ namespace ProyectoTurnera.Gui
             LoadTurnos();
         }
 
+        private void DgvTurnos_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Delete)
+                return;
+
+            var grid = (DataGridView)sender;
+            if (grid.SelectedRows == null || grid.SelectedRows.Count == 0)
+                return;
+
+            var rows = grid.SelectedRows.Cast<DataGridViewRow>().ToList();
+            var deletableIds = new List<int>();
+
+            // First pass: validate all selected rows and collect ids to delete
+            foreach (var r in rows)
+            {
+                if (r.Cells["Id"] == null || r.Cells["Id"].Value == null || r.Cells["Id"].Value == DBNull.Value)
+                    continue;
+
+                if (!int.TryParse(r.Cells["Id"].Value.ToString(), out int id))
+                    continue;
+
+                try
+                {
+                    DataTable dt = Database.Consultar($"SELECT Paciente FROM turnos WHERE Id = {id} LIMIT 1");
+                    // allow delete only if no Paciente assigned
+                    if (dt == null || dt.Rows.Count == 0 || dt.Rows[0]["Paciente"] == DBNull.Value || string.IsNullOrWhiteSpace(dt.Rows[0]["Paciente"]?.ToString()))
+                    {
+                        deletableIds.Add(id);
+                    }
+                }
+                catch
+                {
+                    // ignore this row on DB error (or optionally surface error per row)
+                }
+            }
+
+            if (deletableIds.Count == 0)
+            {
+                MessageBox.Show("No hay turnos seleccionados que puedan eliminarse (tienen pacientes asignados).", "InformaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var confirm = MessageBox.Show($"Eliminar {deletableIds.Count} turno(s) seleccionados?", "Confirmar eliminaciÃ³n", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (confirm != DialogResult.Yes)
+                return;
+
+            foreach (var id in deletableIds)
+            {
+                try
+                {
+                    Database.Ejecutar($"DELETE FROM turnos WHERE Id = {id}");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al eliminar turno {id}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            // Refresh grid after deletes
+            LoadTurnos();
+        }
+
         private void LoadMedicosForTurnos()
         {
             try
             {
-                DataTable dt = BD.Consultar("SELECT Id, CONCAT(Nombre, ' ', Apellido) AS DisplayName FROM medicos");
+                DataTable dt = Database.Consultar("SELECT Id, CONCAT(Nombre, ' ', Apellido) AS DisplayName FROM medicos");
                 if (dt == null)
                     return;
                 cbMedicoTurnos.DataSource = dt;
@@ -872,16 +981,12 @@ namespace ProyectoTurnera.Gui
 
         private void LoadConsultoriosForTurnos()
         {
-            try
-            {
-                DataTable dt = BD.Consultar("SELECT Id, CONCAT(consultorios.Nombre, ' ', consultorios.Direccion, ' No. ', CAST(consultorios.NumeroConsultorio AS CHAR)) AS Nombre FROM consultorios");
-                if (dt == null)
-                    return;
-                cbConsultorioTurnos.DataSource = dt;
-                cbConsultorioTurnos.ValueMember = "Id";
-                cbConsultorioTurnos.DisplayMember = "Nombre";
-            }
-            catch { }
+
+            var data = new BindingList<Consultorio>(Consultorio.GetAll());
+            cbConsultorioTurnos.DataSource = data;
+            cbConsultorioTurnos.DisplayMember = "NombreCompleto";
+            cbConsultorioTurnos.ValueMember = "Id";
+
         }
 
         private void LoadTurnos()
@@ -909,7 +1014,7 @@ namespace ProyectoTurnera.Gui
                     $" LEFT JOIN pacientes ON pacientes.Id = turnos.Paciente " +
                     $" LEFT JOIN prestadores as prestadores_paciente ON prestadores_paciente.Id = turnos.PrestadorPaciente " + 
                     $"WHERE turnos.Fecha >= '{first:yyyy-MM-dd 00:00:00}' AND turnos.Fecha <= '{last:yyyy-MM-dd HH:mm:ss}' ORDER BY fecha";
-                DataTable dt = BD.Consultar(sql);
+                DataTable dt = Database.Consultar(sql);
                 dgvTurnos.DataSource = dt;
             }
             catch (Exception ex)
@@ -924,7 +1029,7 @@ namespace ProyectoTurnera.Gui
             {
                 if (cbMedicoTurnos.SelectedValue == null || cbConsultorioTurnos.SelectedValue == null)
                 {
-                    MessageBox.Show("Seleccione médico y consultorio.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Seleccione mÃ©dico y consultorio.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -932,7 +1037,7 @@ namespace ProyectoTurnera.Gui
                 int consultorioId = Convert.ToInt32(cbConsultorioTurnos.SelectedValue);
 
                 // Get medico data (Especialidad, PrecioConsulta)
-                DataTable dtMed = BD.Consultar($"SELECT Especialidad, PrecioConsulta, Prestador FROM medicos WHERE Id = {medicoId} LIMIT 1");
+                DataTable dtMed = Database.Consultar($"SELECT Especialidad, PrecioConsulta, Prestador FROM medicos WHERE Id = {medicoId} LIMIT 1");
                 string especialidad = "";
                 decimal precio = 0m;
                 string prestador_medico = "";
@@ -951,7 +1056,7 @@ namespace ProyectoTurnera.Gui
                 TimeSpan tEnd = dtpHoraFin.Value.TimeOfDay;
                 if (tEnd < tStart)
                 {
-                    MessageBox.Show("La hora fin debe ser mayor o igual a la hora inicio.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("La hora fin debe ser mayor o igual a la hora inicio.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -964,7 +1069,7 @@ namespace ProyectoTurnera.Gui
 
                 if (daysSelected.Count == 0)
                 {
-                    MessageBox.Show("Seleccione al menos un día de la semana.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Seleccione al menos un dÃ­a de la semana.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -987,14 +1092,14 @@ namespace ProyectoTurnera.Gui
 
                 if (inserts.Count == 0)
                 {
-                    MessageBox.Show("No se generaron turnos con los parámetros indicados.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("No se generaron turnos con los parÃ¡metros indicados.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
                 // Execute inserts inside a simple loop (could be optimized into batch if needed)
                 foreach (var ins in inserts)
                 {
-                    BD.Ejecutar(ins);
+                    Database.Ejecutar(ins);
                 }
 
                 MessageBox.Show($"Generados {inserts.Count} turnos.", "Ok", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1008,6 +1113,224 @@ namespace ProyectoTurnera.Gui
             }
         }
 
+private void SetupReportTab()
+        {
+            try
+            {
+                tabReportes.Controls.Clear();
+
+                pnlReportParams = new Panel { Dock = DockStyle.Top, Height = 64, Padding = new Padding(8) };
+
+                var lblMed = new Label { Text = "MÃ©dico:", Left = 8, Top = 8, AutoSize = true };
+                cbReportMedico = new ComboBox { Left = lblMed.Right + 8, Top = lblMed.Top - 3, Width = 260, DropDownStyle = ComboBoxStyle.DropDownList };
+
+                var lblFrom = new Label { Text = "Desde:", Left = cbReportMedico.Right + 12, Top = lblMed.Top, AutoSize = true };
+                dtpReportFrom = new DateTimePicker { Format = DateTimePickerFormat.Short, Left = lblFrom.Right + 8, Top = lblMed.Top - 3, Width = 100, Value = DateTime.Today.AddDays(-7) };
+
+                var lblTo = new Label { Text = "Hasta:", Left = dtpReportFrom.Right + 8, Top = lblMed.Top, AutoSize = true };
+                dtpReportTo = new DateTimePicker { Format = DateTimePickerFormat.Short, Left = lblTo.Right + 8, Top = lblMed.Top - 3, Width = 100, Value = DateTime.Today };
+
+                chkReportShowDetail = new CheckBox { Text = "Mostrar detalle", Left = dtpReportTo.Right + 12, Top = lblMed.Top - 3, AutoSize = true, Checked = true };
+
+                btnRunReport = new Button { Text = "Generar reporte", Left = chkReportShowDetail.Right + 12, Top = lblMed.Top - 6, Width = 120 };
+                btnRunReport.Click += (s, e) => RunReport();
+
+                pnlReportParams.Controls.Add(lblMed);
+                pnlReportParams.Controls.Add(cbReportMedico);
+                pnlReportParams.Controls.Add(lblFrom);
+                pnlReportParams.Controls.Add(dtpReportFrom);
+                pnlReportParams.Controls.Add(lblTo);
+                pnlReportParams.Controls.Add(dtpReportTo);
+                pnlReportParams.Controls.Add(chkReportShowDetail);
+                pnlReportParams.Controls.Add(btnRunReport);
+
+                pnlReportResults = new Panel { Dock = DockStyle.Fill, Padding = new Padding(8) };
+
+                dgvReportResults = new DataGridView
+                {
+                    Dock = DockStyle.Fill,
+                    ReadOnly = true,
+                    AllowUserToAddRows = false,
+                    AllowUserToDeleteRows = false,
+                    AutoGenerateColumns = true,
+                    SelectionMode = DataGridViewSelectionMode.FullRowSelect
+                };
+
+                lblReportTotal = new Label { Dock = DockStyle.Bottom, Height = 28, TextAlign = ContentAlignment.MiddleRight, Padding = new Padding(0, 4, 8, 0) };
+
+                pnlReportResults.Controls.Add(dgvReportResults);
+                pnlReportResults.Controls.Add(lblReportTotal);
+
+                tabReportes.Controls.Add(pnlReportResults);
+                tabReportes.Controls.Add(pnlReportParams);
+
+                // Populate medicos combo (allow empty = all)
+                try
+                {
+                    DataTable dt = Database.Consultar("SELECT Id, CONCAT(Apellido, ', ', Nombre) AS DisplayName FROM medicos ORDER BY Apellido, Nombre");
+                    if (dt != null)
+                    {
+                        var rowAll = dt.NewRow();
+                        rowAll["Id"] = DBNull.Value;
+                        rowAll["DisplayName"] = "-- Todos --";
+                        dt.Rows.InsertAt(rowAll, 0);
+
+                        cbReportMedico.DataSource = dt;
+                        cbReportMedico.ValueMember = "Id";
+                        cbReportMedico.DisplayMember = "DisplayName";
+                    }
+                }
+                catch
+                {
+                    // ignore load failures for combo
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al inicializar Reportes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void RunReport()
+        {
+            try
+            {
+                DateTime start = dtpReportFrom.Value.Date;
+                DateTime endExclusive = dtpReportTo.Value.Date.AddDays(1); // half-open
+
+                int? medicoFilter = null;
+                if (cbReportMedico.SelectedValue != null && cbReportMedico.SelectedValue != DBNull.Value)
+                {
+                    int parsed;
+                    if (int.TryParse(cbReportMedico.SelectedValue.ToString(), out parsed))
+                        medicoFilter = parsed;
+                }
+
+                string whereBase = "WHERE turnos.Paciente IS NOT NULL AND Estado = 1 " +
+                                   $"AND turnos.Fecha >= '{start:yyyy-MM-dd 00:00:00}' AND turnos.Fecha < '{endExclusive:yyyy-MM-dd 00:00:00}'";
+                if (medicoFilter.HasValue)
+                    whereBase += $" AND turnos.Medico = {medicoFilter.Value}";
+
+                string detailSql = "SELECT " +
+                             "turnos.Id, " +
+                             "turnos.Fecha, " +
+                             "CONCAT(medicos.Apellido, ', ', medicos.Nombre) AS MedicoNombre, " +
+                             "especialidades.Nombre AS Especialidad, " +
+                             "CONCAT(consultorios.Nombre, ' ', consultorios.Direccion, ' ', consultorios.NumeroConsultorio) AS Consultorio, " +
+                             "turnos.PrecioConsulta, " +
+                             "CASE WHEN turnos.PrestadorMedico IS NOT NULL AND turnos.PrestadorPaciente IS NOT NULL AND turnos.PrestadorMedico = turnos.PrestadorPaciente " +
+                             "THEN ROUND(turnos.PrecioConsulta * 0.5, 2) ELSE 0 END AS Bonificacion, " +
+                             "ROUND(turnos.PrecioConsulta - (CASE WHEN turnos.PrestadorMedico IS NOT NULL AND turnos.PrestadorPaciente IS NOT NULL AND turnos.PrestadorMedico = turnos.PrestadorPaciente THEN turnos.PrecioConsulta * 0.5 ELSE 0 END), 2) AS PrecioFinal, " +
+                             "CONCAT(pacientes.Apellido, ', ', pacientes.Nombre) AS PacienteNombre " +
+                             "FROM turnos " +
+                             "JOIN medicos ON medicos.Id = turnos.Medico " +
+                             "JOIN especialidades ON especialidades.Id = turnos.Especialidad " +
+                             "JOIN consultorios ON consultorios.Id = turnos.Consultorio " +
+                             "LEFT JOIN pacientes ON pacientes.Id = turnos.Paciente " +
+                             $"{whereBase} " +
+                             "ORDER BY turnos.Fecha;";
+
+                string aggSql = "SELECT " +
+                                "COUNT(*) AS TurnosCount, " +
+                                "IFNULL(SUM(turnos.PrecioConsulta),0) AS TotalPrecio, " +
+                                "IFNULL(SUM(CASE WHEN turnos.PrestadorMedico IS NOT NULL AND turnos.PrestadorPaciente IS NOT NULL AND turnos.PrestadorMedico = turnos.PrestadorPaciente THEN ROUND(turnos.PrecioConsulta * 0.5,2) ELSE 0 END),0) AS TotalBonificacion, " +
+                                "IFNULL(SUM(ROUND(turnos.PrecioConsulta - (CASE WHEN turnos.PrestadorMedico IS NOT NULL AND turnos.PrestadorPaciente IS NOT NULL AND turnos.PrestadorMedico = turnos.PrestadorPaciente THEN turnos.PrecioConsulta * 0.5 ELSE 0 END),2)),0) AS TotalPrecioFinal " +
+                                "FROM turnos " +
+                                $"{whereBase};";
+
+                DataTable dtDetail = Database.Consultar(detailSql);
+                DataTable dtAgg = Database.Consultar(aggSql);
+
+                int count = 0;
+                decimal totalPrecio = 0m;
+                decimal totalBonificacion = 0m;
+                decimal totalPrecioFinal = 0m;
+
+                if (dtAgg != null && dtAgg.Rows.Count > 0)
+                {
+                    var a = dtAgg.Rows[0];
+                    int.TryParse(a["TurnosCount"]?.ToString() ?? "0", out count);
+                    decimal.TryParse(a["TotalPrecio"]?.ToString() ?? "0", System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out totalPrecio);
+                    decimal.TryParse(a["TotalBonificacion"]?.ToString() ?? "0", System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out totalBonificacion);
+                    decimal.TryParse(a["TotalPrecioFinal"]?.ToString() ?? "0", System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out totalPrecioFinal);
+                }
+
+                // 666 lblReportTotal.Text = $Count: {count}    Total: {totalPrecio.ToString("N2")}    BonificaciÃ³n: {totalBonificacion.ToString("N2")}    PrecioFinal: {totalPrecioFinal.ToString("N2")}';);
+
+                if (chkReportShowDetail.Checked)
+                {
+                    if (dtDetail == null)
+                    {
+                        dgvReportResults.DataSource = null;
+                        return;
+                    }
+
+                    // Append totals row to detail table
+                    var totalsRow = dtDetail.NewRow();
+
+                    // Try to populate commonly present columns; fall back to first/last columns
+                    if (dtDetail.Columns.Contains("MedicoNombre"))
+                        totalsRow["MedicoNombre"] = "TOTAL";
+                    else if (dtDetail.Columns.Count > 0)
+                        totalsRow[0] = "TOTAL";
+
+                    if (dtDetail.Columns.Contains("PrecioConsulta"))
+                        totalsRow["PrecioConsulta"] = totalPrecio;
+                    if (dtDetail.Columns.Contains("Bonificacion"))
+                        totalsRow["Bonificacion"] = totalBonificacion;
+                    if (dtDetail.Columns.Contains("PrecioFinal"))
+                        totalsRow["PrecioFinal"] = totalPrecioFinal;
+
+                    dtDetail.Rows.Add(totalsRow);
+
+                    dgvReportResults.DataSource = dtDetail;
+
+                    // Format numeric columns if they exist
+                    if (dgvReportResults.Columns.Contains("PrecioFinal"))
+                        dgvReportResults.Columns["PrecioFinal"].DefaultCellStyle.Format = "N2";
+                    if (dgvReportResults.Columns.Contains("PrecioConsulta"))
+                        dgvReportResults.Columns["PrecioConsulta"].DefaultCellStyle.Format = "N2";
+                    if (dgvReportResults.Columns.Contains("Bonificacion"))
+                        dgvReportResults.Columns["Bonificacion"].DefaultCellStyle.Format = "N2";
+
+                    // Optionally style the last row (totals) to make it stand out
+                    if (dgvReportResults.Rows.Count > 0)
+                    {
+                        var lastIndex = dgvReportResults.Rows.Count - 1;
+                        dgvReportResults.Rows[lastIndex].DefaultCellStyle.Font = new Font(dgvReportResults.Font, FontStyle.Bold);
+                    }
+                }
+                else
+                {
+                    // Show a one-row summary table when detail is hidden
+                    var summary = new DataTable();
+                    summary.Columns.Add("Turnos", typeof(int));
+                    summary.Columns.Add("TotalPrecio", typeof(decimal));
+                    summary.Columns.Add("TotalBonificacion", typeof(decimal));
+                    summary.Columns.Add("TotalPrecioFinal", typeof(decimal));
+
+                    var r = summary.NewRow();
+                    r["Turnos"] = count;
+                    r["TotalPrecio"] = totalPrecio;
+                    r["TotalBonificacion"] = totalBonificacion;
+                    r["TotalPrecioFinal"] = totalPrecioFinal;
+                    summary.Rows.Add(r);
+
+                    dgvReportResults.DataSource = summary;
+                    if (dgvReportResults.Columns.Contains("TotalPrecioFinal"))
+                        dgvReportResults.Columns["TotalPrecioFinal"].DefaultCellStyle.Format = "N2";
+                    if (dgvReportResults.Columns.Contains("TotalPrecio"))
+                        dgvReportResults.Columns["TotalPrecio"].DefaultCellStyle.Format = "N2";
+                    if (dgvReportResults.Columns.Contains("TotalBonificacion"))
+                        dgvReportResults.Columns["TotalBonificacion"].DefaultCellStyle.Format = "N2";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al ejecutar reporte: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        } */
 
     }
+
 }

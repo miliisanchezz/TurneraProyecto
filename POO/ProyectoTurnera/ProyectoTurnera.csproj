@@ -99,99 +99,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controlador\BD.cs" />
-    <Compile Include="Controlador\Consultorio.cs" />
+    <Compile Include="Controller\AdministradorController.cs" />
+    <Compile Include="Controller\ConsultorioController.cs" />
+    <Compile Include="Controller\EspecialidadController.cs" />
+    <Compile Include="Controller\PrestadorController.cs" />
+    <Compile Include="Data\AdministradorRepository.cs" />
+    <Compile Include="Data\ConsultorioRepository.cs" />
+    <Compile Include="Data\Database.cs" />
+    <Compile Include="Data\EspecialidadRepository.cs" />
+    <Compile Include="Data\PrestadorRepository.cs" />
     <Compile Include="Gui\frmAdministrador.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Gui\frmMedico.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\frmPaciente.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controlador\Medico.cs" />
-    <Compile Include="Controlador\Paciente.cs" />
-    <Compile Include="Controlador\Turno.cs" />
-    <Compile Include="Gui\AgregarTurno.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\AgregarTurno.Designer.cs">
-      <DependentUpon>AgregarTurno.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Gui\Ingresar_como.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\Ingresar_como.Designer.cs">
-      <DependentUpon>Ingresar_como.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Gui\IngresoMedico.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\IngresoMedico.Designer.cs">
-      <DependentUpon>IngresoMedico.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Gui\IngresoPaciente.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\IngresoPaciente.Designer.cs">
-      <DependentUpon>IngresoPaciente.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Gui\Helpers\GridHelper.cs" />
     <Compile Include="Gui\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Gui\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\PanelMedico.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\PanelMedico.Designer.cs">
-      <DependentUpon>PanelMedico.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Gui\PanelPaciente.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\PanelPaciente.Designer.cs">
-      <DependentUpon>PanelPaciente.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Gui\Reportes.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\Reportes.Designer.cs">
-      <DependentUpon>Reportes.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Model\Administrador.cs" />
+    <Compile Include="Model\Consultorio.cs" />
+    <Compile Include="Model\Especialidad.cs" />
+    <Compile Include="Model\Persona.cs" />
+    <Compile Include="Model\Prestador.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Gui\frmAdministrador.resx">
       <DependentUpon>frmAdministrador.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\frmMedico.resx">
-      <DependentUpon>frmMedico.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\AgregarTurno.resx">
-      <DependentUpon>AgregarTurno.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\frmPaciente.resx">
-      <DependentUpon>frmPaciente.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\Ingresar_como.resx">
-      <DependentUpon>Ingresar_como.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\IngresoMedico.resx">
-      <DependentUpon>IngresoMedico.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\IngresoPaciente.resx">
-      <DependentUpon>IngresoPaciente.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\PanelMedico.resx">
-      <DependentUpon>PanelMedico.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\PanelPaciente.resx">
-      <DependentUpon>PanelPaciente.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\Reportes.resx">
-      <DependentUpon>Reportes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -217,5 +149,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

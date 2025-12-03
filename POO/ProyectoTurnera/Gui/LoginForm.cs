@@ -1,9 +1,9 @@
+using ProyectoTurnera.Controller;
+using ProyectoTurnera.Model;    
 using System;
 using System.Drawing;
-using System.Security.Cryptography;
-using System.Text;
+
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 
 namespace ProyectoTurnera.Gui
 {
@@ -17,7 +17,6 @@ namespace ProyectoTurnera.Gui
         private Button btnCancel;
         private LinkLabel linkCerrar;
 
-        // New controls for role selection
         private GroupBox grpRole;
         private RadioButton rbAdministrador;
         private RadioButton rbMedico;
@@ -77,100 +76,53 @@ namespace ProyectoTurnera.Gui
 
         private void BtnLogin_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtUser.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
-            {
-                MessageBox.Show("Ingrese usuario y contraseña", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
 
-            // Determine selected role and corresponding table
-            string selectedTable;
-            string selectedRoleKey;
+            int dni = Convert.ToInt32(txtUser.Text.Trim());
+            string password = txtPassword.Text.Trim();
 
-            if (rbAdministrador.Checked)
-            {
-                selectedTable = "administradores";
-                selectedRoleKey = "administrador";
-            }
-            else if (rbMedico.Checked)
-            {
-                selectedTable = "medicos";
-                selectedRoleKey = "medico";
-            }
-            else if (rbPaciente.Checked)
-            {
-                selectedTable = "pacientes";
-                selectedRoleKey = "paciente";
-            }
-            else
-            {
-                MessageBox.Show("Seleccione un rol para continuar", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            try {
 
-            try
-            {
-                string user = txtUser.Text.Trim();
-                string pwd = txtPassword.Text.Trim();
-                
-                string pwdParam = pwd;
-
-                using (var conn = new MySqlConnection(BD.cadena))
-                using (var cmd = conn.CreateCommand())
+                if (rbAdministrador.Checked)
                 {
-                    // Table name cannot be parameterized; ensure selection was validated above
-                    cmd.CommandText = $"SELECT Id FROM {selectedTable} WHERE DNI = @user AND Password = @pwd LIMIT 1";
-                    cmd.Parameters.AddWithValue("@user", user);
-                    cmd.Parameters.AddWithValue("@pwd", pwdParam);
 
-                    conn.Open();
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        if (rdr.Read())
-                        {
-                            int id = rdr.GetInt32("Id");
+                    AdministradorController administradorcontroller = new AdministradorController();
 
-                            // Open the corresponding form based on role selection.
-                            // The user requested opening: frmAdministrador, frmEdico y frmEmpleado
-                            // These forms are instantiated without parameters; adjust if your constructors require arguments.
-                            Form nextForm;
-                            switch (selectedRoleKey)
-                            {
-                                case "administrador":
-                                    nextForm = new frmAdministrador();
-                                    break;
-                                case "medico":
-                                    nextForm = new frmMedico();
-                                    break;
-                                case "paciente":
-                                    nextForm = new frmPaciente(id);
-                                    break;
-                                default:
-                                    nextForm = null;
-                                    break;
-                            }
+                    Administrador administrador = administradorcontroller.Login(dni, password);
 
-                            if (nextForm != null)
-                            {
-                                nextForm.Show();
-                                Hide();
-                            }
-                            else
-                            {
-                                MessageBox.Show("No se pudo abrir la ventana correspondiente al rol.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("Usuario o contraseña incorrectos", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
+                    new frmAdministrador(administrador).Show();
+
                 }
+                else if (rbMedico.Checked)
+                {
+                    //new frmMedico(Medico.Login(dni, pwd)).Show();
+
+                }
+                else if (rbPaciente.Checked)
+                {
+
+                    // 666 _logincontroller = new PacienteController();
+
+                    //new frmPaciente(Paciente.Login(dni, pwd)).Show();
+                }
+                else
+                {
+                    MessageBox.Show("Seleccione un rol para continuar", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                this.Hide();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("DNI o contraseña incorrectos.", "Error de inicio de sesión",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al autenticar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
     }
