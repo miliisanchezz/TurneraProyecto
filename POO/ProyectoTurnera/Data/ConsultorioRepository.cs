@@ -6,9 +6,9 @@ using MySql.Data.MySqlClient;
 
 namespace ProyectoTurnera.Data
 {
-    public class ConsultorioRepository
+    public static class ConsultorioRepository
     {
-        public Consultorio GetById(int id)
+        public static Consultorio GetById(int id)
         {
             const string sql = @"
                 SELECT Id, Nombre, Direccion, NumeroConsultorio 
@@ -21,12 +21,11 @@ namespace ProyectoTurnera.Data
             return dt.Rows.Count == 0 ? null : MapRow(dt.Rows[0]);
         }
 
-        public List<Consultorio> GetAll()
+        public static List<Consultorio> GetAll()
         {
             const string sql = @"
                 SELECT Id, Nombre, Direccion, NumeroConsultorio 
-                FROM consultorios 
-                ORDER BY Nombre";
+                FROM consultorios";
 
             var dt = Database.Consultar(sql);
             var lista = new List<Consultorio>();
@@ -37,21 +36,17 @@ namespace ProyectoTurnera.Data
             return lista;
         }
 
-        public int Insert(string nombre, string direccion, string numeroConsultorio)
+        public static int Insert(Consultorio consultorio)
         {
-            if (string.IsNullOrWhiteSpace(nombre))
-                throw new ArgumentException("El nombre del consultorio es obligatorio.");
-
             const string sql = @"
                 INSERT INTO consultorios (Nombre, Direccion, NumeroConsultorio) 
-                VALUES (@Nombre, @Direccion, @NumeroConsultorio);
-                SELECT SCOPE_IDENTITY();";
+                VALUES (@Nombre, @Direccion, @NumeroConsultorio)";
 
             var parametros = new[]
             {
-                new MySqlParameter("@Nombre", MySqlDbType.VarChar, 100) { Value = (object)nombre.Trim() ?? DBNull.Value },
-                new MySqlParameter("@Direccion", MySqlDbType.VarChar, 200) { Value = (object)direccion?.Trim() ?? DBNull.Value },
-                new MySqlParameter("@NumeroConsultorio", MySqlDbType.Int32) { Value = (object)numeroConsultorio ?? DBNull.Value }
+                new MySqlParameter("@Nombre", MySqlDbType.VarChar, 100) { Value = consultorio.Nombre },
+                new MySqlParameter("@Direccion", MySqlDbType.VarChar, 200) { Value =consultorio.Direccion },
+                new MySqlParameter("@NumeroConsultorio", MySqlDbType.Int32) { Value = consultorio.NumeroConsultorio }
             };
 
             var result = Database.EjecutarEscalar(sql, parametros);
@@ -60,7 +55,7 @@ namespace ProyectoTurnera.Data
 
         }
 
-        public void Update(Consultorio consultorio)
+        public static void Update(Consultorio consultorio)
         {
          
             const string sql = @"
@@ -82,7 +77,7 @@ namespace ProyectoTurnera.Data
 
         }
 
-        public void Delete(int id)
+        public static void Delete(int id)
         {
 
             const string sql = "DELETE FROM consultorios WHERE Id = @Id";

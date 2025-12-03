@@ -1,19 +1,36 @@
-﻿// ProyectoTurnera.Controller/PacienteController.cs
-using ProyectoTurnera.Data;
+﻿using ProyectoTurnera.Data;
 using ProyectoTurnera.Model;
-using System;
+using System.Collections.Generic;
 
 namespace ProyectoTurnera.Controller
+
 {
-    public class PacienteController
+    public class PacienteController : IEntityController<Paciente>
     {
-        private readonly PacienteRepository _repo = new PacienteRepository();
 
         public Paciente Login(int dni, string password)
         {
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Contraseña requerida.");
-
-            return _repo.Login(dni, password);
+            return PacienteRepository.Login(dni, password);
         }
+
+        public List<Paciente> ObtenerTodos() => PacienteRepository.GetAll();
+
+        public Paciente ObtenerPorId(int id) => PacienteRepository.GetById(id);
+
+        public int Crear(Paciente paciente)
+        {
+            return PacienteRepository.Insert(paciente);
+        }
+
+        public void Actualizar(Paciente paciente)
+        {
+            PacienteRepository.Update(paciente);
+        }
+
+        public void Eliminar(int id)
+        {
+            PacienteRepository.Delete(id);
+        }
+
     }
 }

@@ -1,5 +1,4 @@
 ﻿using ProyectoTurnera.Controller;
-using ProyectoTurnera.Data;
 using ProyectoTurnera.Gui.Helpers;
 using ProyectoTurnera.Model;
 using System;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ProyectoTurnera.Gui
@@ -17,6 +17,8 @@ namespace ProyectoTurnera.Gui
         private readonly Administrador administrador;
 
         private readonly AdministradorController _administradorController = new AdministradorController();
+        private readonly PacienteController _pacienteController = new PacienteController();
+        private readonly MedicoController _medicoController = new MedicoController();
         private readonly PrestadorController _prestadorController = new PrestadorController();
         private readonly EspecialidadController _especialidadController = new EspecialidadController();
         private readonly ConsultorioController _consultorioController = new ConsultorioController();
@@ -86,19 +88,16 @@ namespace ProyectoTurnera.Gui
             LoadPrestadores();
             LoadEspecialidades();
             LoadConsultorios();
-            LoadAdministradores(); 
-
-            /**
-            
+            LoadAdministradores();
             LoadPacientes();
             LoadMedicos();
-            **/
+            
         }
 
         private void InitializeComponents()
         {
 
-            this.Text  = "Administrador :: " + this.administrador.NombreCompleto;
+            this.Text  = "Administrador :: " + this.administrador.ToString();
 
             StartPosition = FormStartPosition.CenterScreen;
             Size = new Size(800, 600);
@@ -152,14 +151,11 @@ namespace ProyectoTurnera.Gui
             AttachCrudHandlers(dgvEspecialidades, "especialidades", LoadEspecialidades);
             AttachCrudHandlers(dgvConsultorios, "consultorios", LoadConsultorios);
             AttachCrudHandlers(dgvAdministradores, "administradores", LoadAdministradores);
-
-            /**
-
             AttachCrudHandlers(dgvPacientes, "pacientes", LoadPacientes);
             AttachCrudHandlers(dgvMedicos, "medicos", LoadMedicos);
             
             
-
+            /*
             SetupTurnosTab();
 
             SetupReportTab();*/
@@ -246,12 +242,14 @@ namespace ProyectoTurnera.Gui
                         tb.KeyPress -= NumericKeyPress;
 
                         // Attach numeric-only handler for DNI, Matricula and NumeroConsultorio
+
+                        /*
                         if (string.Equals(colNameEdit, "DNI", StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(colNameEdit, "Matricula", StringComparison.OrdinalIgnoreCase) ||
+                           str ing.Equals(colNameEdit, "Matricula", StringComparison.OrdinalIgnoreCase) ||
                             string.Equals(colNameEdit, "NumeroConsultorio", StringComparison.OrdinalIgnoreCase))
-                        {
+                        { 
                             tb.KeyPress += NumericKeyPress;
-                        }
+                        }*/
                     }
                 }
                 catch
@@ -270,331 +268,134 @@ namespace ProyectoTurnera.Gui
                 }
             };
 
-            // cuando termina la edición de una celda -> UPDATE columna específica
-            dgv.CellEndEdit += (s, e) =>
-            {
-                /**
-                try
-                {
-                    if (e.RowIndex < 0 || e.ColumnIndex < 0)
-                        return;
-
-                    var grid = (DataGridView)s;
-
-                    // Guard against stale row indices (can happen if the grid was reloaded mid-event)
-                    if (e.RowIndex >= grid.Rows.Count)
-                        return;
-
-                    var row = grid.Rows[e.RowIndex];
-
-                    // Ensure uppercase for Nombre/Apellido columns right after editing
-                    var column = grid.Columns[e.ColumnIndex];
-                    var colNameForCase = column.DataPropertyName;
-                    if (string.IsNullOrWhiteSpace(colNameForCase))
-                        colNameForCase = column.Name;
-                    if (UppercaseColumns.Contains(colNameForCase))
-                    {
-                        var cell = row.Cells[e.ColumnIndex];
-                        if (cell.Value != null)
-                        {
-                            var upper = cell.Value.ToString().ToUpperInvariant();
-                            if (!string.Equals(cell.Value.ToString(), upper, StringComparison.Ordinal))
-                            {
-                                // Update the cell value; this keeps data consistent before update/insert
-                                cell.Value = upper;
-                            }
-                        }
-                    }
-
-                    // Buscar columna 'Id' (clave primaria)
-                    if (!grid.Columns.Contains("Id"))
-                        return;
-
-                    var idObj = row.Cells["Id"].Value;
-                    if (idObj == null || idObj == DBNull.Value || string.IsNullOrWhiteSpace(idObj.ToString()))
-                    {
-                        // fila nueva sin Id: no actualizar aquí (se insertará en RowValidated)
-                        return;
-                    }
-
-                    var id = idObj.ToString();
-                    var col = column;
-                    var colName = col.DataPropertyName;
-                    if (string.IsNullOrWhiteSpace(colName))
-                        colName = col.Name;
-
-                    if (string.Equals(colName, "Id", StringComparison.OrdinalIgnoreCase))
-                        return;
-
-                    var cellValue = row.Cells[e.ColumnIndex].Value;
-                    string sqlValue = cellValue == null || cellValue == DBNull.Value ? "NULL" : $"'{EscapeSql(cellValue.ToString())}'";
-
-                    string sql = $"UPDATE {tableName} SET {colName} = {sqlValue} WHERE Id = {id}";
-                    Database.Ejecutar(sql);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error al actualizar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                */
-            };
-
-            dgv.RowValidated += (s, e) =>
-            {
-                /**
-                try
-                {
-                    var grid = (DataGridView)s;
-
-                    if (e.RowIndex < 0 || e.RowIndex >= grid.Rows.Count)
-                        return;
-
-                    var row = grid.Rows[e.RowIndex];
-
-                    // ignorar fila nueva
-                    if (row.IsNewRow)
-                        return;
-
-                    //----------------------------------------------------------------------
-                    // 1) SI ES BINDINGLIST<T> → usar Insert/Update del objeto (ORM-like)
-                    //----------------------------------------------------------------------
-                    var dsType = grid.DataSource?.GetType();
-
-                    if (dsType != null &&
-                        dsType.IsGenericType &&
-                        dsType.GetGenericTypeDefinition() == typeof(BindingList<>))
-                    {
-                        var obj = row.DataBoundItem;
-                        if (obj == null)
-                            return;
-
-                        var type = obj.GetType();
-
-                        // obtener propiedad Id
-                        var propId = type.GetProperty("Id");
-                        if (propId == null)
-                            return;
-
-                        int id = Convert.ToInt32(propId.GetValue(obj));
-
-                        // buscar métodos Insert y Update
-                        var insertMethod = type.GetMethod("Insert",
-                            System.Reflection.BindingFlags.Static |
-                            System.Reflection.BindingFlags.Public |
-                            System.Reflection.BindingFlags.NonPublic);
-
-                        var updateMethod = type.GetMethod("Update",
-                            System.Reflection.BindingFlags.Static |
-                            System.Reflection.BindingFlags.Public |
-                            System.Reflection.BindingFlags.NonPublic);
-
-                        //------------------------------------------------------------------
-                        // INSERT
-                        //------------------------------------------------------------------
-                        if (id == 0)
-                        {
-                            if (insertMethod == null)
-                            {
-                                MessageBox.Show($"La clase {type.Name} no tiene Insert(...)");
-                                return;
-                            }
-
-                            int newId = (int)insertMethod.Invoke(null, new object[] { obj });
-                            propId.SetValue(obj, newId); // actualizar en la BindingList
-                            return;
-                        }
-
-                        //------------------------------------------------------------------
-                        // UPDATE
-                        //------------------------------------------------------------------
-                        if (updateMethod != null)
-                        {
-                            updateMethod.Invoke(null, new object[] { obj });
-                        }
-
-                        return;
-                    }
-
-                    return;
-
-                    //----------------------------------------------------------------------
-                    // 2) NO ES BINDINGLIST -> usar SQL genérico de INSERT / UPDATE
-                    //----------------------------------------------------------------------
-                    if (!grid.Columns.Contains("Id"))
-                        return;
-
-                    var idCell = row.Cells["Id"].Value;
-                    bool isInsert = idCell == null ||
-                                    idCell == DBNull.Value ||
-                                    string.IsNullOrWhiteSpace(idCell.ToString());
-
-                    if (isInsert)
-                    {
-                        //-----------------------------------
-                        // INSERT SQL GENERICO
-                        //-----------------------------------
-                        string cols = "";
-                        string vals = "";
-
-                        foreach (DataGridViewColumn col in grid.Columns)
-                        {
-                            var colName = col.DataPropertyName;
-                            if (string.IsNullOrWhiteSpace(colName))
-                                colName = col.Name;
-
-                            // saltear ID
-                            if (colName.Equals("Id", StringComparison.OrdinalIgnoreCase))
-                                continue;
-
-                            // saltear columnas no visibles
-                            if (!col.Visible)
-                                continue;
-
-                            var cellVal = row.Cells[col.Index].Value;
-                            if (cellVal == null || cellVal == DBNull.Value)
-                                continue;
-
-                            if (!string.IsNullOrEmpty(cols))
-                            {
-                                cols += ", ";
-                                vals += ", ";
-                            }
-
-                            cols += colName;
-                            vals += $"'{EscapeSql(cellVal.ToString())}'";
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(cols))
-                        {
-                            string sql = $"INSERT INTO {tableName} ({cols}) VALUES ({vals})";
-                            Database.Ejecutar(sql);
-
-                            // cargar de nuevo para obtener el ID asignado
-                            grid.BeginInvoke((Action)(() => reloadAction?.Invoke()));
-                        }
-
-                        return;
-                    }
-                    else
-                    {
-                        return;
-                        //-----------------------------------
-                        // UPDATE SQL GENERICO
-                        //-----------------------------------
-                        string sets = "";
-
-                        foreach (DataGridViewColumn col in grid.Columns)
-                        {
-                            if (col.Name == "Id" || col.DataPropertyName == "Id")
-                                continue;
-
-                            var colName = col.DataPropertyName;
-                            if (string.IsNullOrWhiteSpace(colName))
-                                colName = col.Name;
-
-                            var val = row.Cells[col.Index].Value;
-                            if (val == null || val == DBNull.Value)
-                                continue;
-
-                            if (!string.IsNullOrEmpty(sets))
-                                sets += ", ";
-
-                            sets += $"{colName} = '{EscapeSql(val.ToString())}'";
-                        }
-
-                        string sql = $"UPDATE {tableName} SET {sets} WHERE Id = {idCell}";
-                        Database.Ejecutar(sql);
-
-                        return;
-                    }
-                
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error al guardar cambios: " + ex.Message);
-                }
-                **/
-            };
-
         }
-
-        private void ConfigureIdColumn(DataGridView dgv, bool visible = true, bool allowEdit = false)
-        {
-            if (dgv == null)
-                return;
-
-            if (!dgv.Columns.Contains("Id"))
-                return;
-
-            var col = dgv.Columns["Id"];
-            col.Visible = visible;
-            col.ReadOnly = !allowEdit;
-            col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            col.Width = Math.Max(50, col.Width);
-            col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-
-        }
-
+        
         private void LoadPrestadores()
         {
             BindingList<Prestador> prestadores = new BindingList<Prestador>(_prestadorController.ObtenerTodos());
-
             dgvPrestadores.DataSource = prestadores;
             GridHelper.ConfigurarColumnasPrestadores(dgvPrestadores);
-
-            ConfigureIdColumn(dgvPrestadores, visible: true, allowEdit: false);
-
+            GridHelper.ConfigureIdColumn(dgvPrestadores, visible: true, allowEdit: false);
+            GridHelper.HabilitarEdicionInline(
+                dgvPrestadores,
+                prestadores,
+                _prestadorController,
+                "Nombre"
+            );
             GridHelper.HabilitarEliminacionConConfirmacion(dgvPrestadores, 
                 prestadores,
                 id => _prestadorController.Eliminar(id));
-
         }
 
         private void LoadEspecialidades()
         {
-
             BindingList<Especialidad> especialidades = new BindingList<Especialidad>(_especialidadController.ObtenerTodos());
-
             dgvEspecialidades.DataSource = especialidades;
             GridHelper.ConfigurarColumnasEspecialidades(dgvEspecialidades);
-
-            ConfigureIdColumn(dgvEspecialidades, visible: true, allowEdit: false);
-
+            GridHelper.ConfigureIdColumn(dgvEspecialidades, visible: true, allowEdit: false);
+            GridHelper.HabilitarEdicionInline(
+                dgvEspecialidades,
+                especialidades,
+                _especialidadController,
+                "Nombre"
+            );
             GridHelper.HabilitarEliminacionConConfirmacion(dgvEspecialidades,
                 especialidades,
                 id => _especialidadController.Eliminar(id));
-
         }
 
         private void LoadConsultorios()
         {
-
             BindingList<Consultorio> consultorios = new BindingList<Consultorio>(_consultorioController.ObtenerTodos());
-
             dgvConsultorios.DataSource = consultorios;
             GridHelper.ConfigurarColumnasConsultorios(dgvConsultorios);
-
-            ConfigureIdColumn(dgvConsultorios, visible: true, allowEdit: false);
-
+            GridHelper.ConfigureIdColumn(dgvConsultorios, visible: true, allowEdit: false);
+            GridHelper.HabilitarEdicionInline(
+                dgvConsultorios,
+                consultorios,
+                _consultorioController,
+                "Nombre", "Direccion"
+            );
             GridHelper.HabilitarEliminacionConConfirmacion(dgvConsultorios,
                 consultorios,
                 id => _consultorioController.Eliminar(id));
-
         }
 
         private void LoadAdministradores()
         {
             BindingList<Administrador> administradores = new BindingList<Administrador>(_administradorController.ObtenerTodos());
-
             dgvAdministradores.DataSource = administradores;
-            GridHelper.ConfigurarColumnasPrestadores(dgvAdministradores);
-
-            ConfigureIdColumn(dgvAdministradores, visible: true, allowEdit: false);
-
+            GridHelper.ConfigurarColumnasAdministradores(dgvAdministradores);
+            GridHelper.ConfigureIdColumn(dgvAdministradores, visible: true, allowEdit: false);
+            GridHelper.HabilitarEdicionInline(
+                dgvAdministradores,
+                administradores,
+                _administradorController,
+                "Nombre", "Apellido"
+            );
             GridHelper.HabilitarEliminacionConConfirmacion(dgvAdministradores,
                 administradores,
                 id => _administradorController.Eliminar(id));
+        }
 
+        private void LoadPacientes()
+        {
+            List<Prestador> prestadores = _prestadorController.ObtenerTodos();
+
+            var pacientes = new BindingList<Paciente>(_pacienteController.ObtenerTodos());
+
+            // 1. Configurar columnas (aún sin Prestador como combo)
+            GridHelper.ConfigurarColumnasPacientes(dgvPacientes);
+
+            // 2. CONVERTIR a ComboBox ANTES del DataSource !!!
+            GridHelper.HabilitarComboConActualizacion(
+                dgvPacientes,
+                "Prestador",
+                prestadores.Cast<object>().ToList(),
+                (entidad, seleccionado) => ((Paciente)entidad).Prestador = seleccionado as Prestador
+            );
+
+            // 3. AHORA sí asignar DataSource (aquí se crean las celdas correctas)
+            dgvPacientes.DataSource = pacientes;
+
+            // 4. Resto de configuraciones
+            GridHelper.ConfigureIdColumn(dgvPacientes, visible: true, allowEdit: false);
+            GridHelper.HabilitarEdicionInline(dgvPacientes, pacientes, _pacienteController, "Nombre", "Apellido");
+            GridHelper.HabilitarEliminacionConConfirmacion(dgvPacientes, pacientes, id => _pacienteController.Eliminar(id));
+        }
+
+        private void LoadMedicos()
+        {
+            List<Prestador> prestadores = _prestadorController.ObtenerTodos();
+            List<Especialidad> especialidades = _especialidadController.ObtenerTodos();
+
+            var medicos = new BindingList<Medico>(_medicoController.ObtenerTodos());
+
+            // 1. Configurar columnas (aún sin Prestador como combo)
+            GridHelper.ConfigurarColumnasMedicos(dgvMedicos);
+
+            // 2. CONVERTIR a ComboBox ANTES del DataSource !!!
+            GridHelper.HabilitarComboConActualizacion(
+                dgvMedicos,
+                "Prestador",
+                prestadores.Cast<object>().ToList(),
+                (entidad, seleccionado) => ((Medico)entidad).Prestador = seleccionado as Prestador
+            );
+
+            GridHelper.HabilitarComboConActualizacion(
+                dgvMedicos,
+                "Especialidad",
+                especialidades.Cast<object>().ToList(),
+                (entidad, seleccionado) => ((Medico)entidad).Especialidad = seleccionado as Especialidad
+            );
+
+            // 3. AHORA sí asignar DataSource (aquí se crean las celdas correctas)
+            dgvMedicos.DataSource = medicos;
+
+            // 4. Resto de configuraciones
+            GridHelper.ConfigureIdColumn(dgvMedicos, visible: true, allowEdit: false);
+            GridHelper.HabilitarEdicionInline(dgvMedicos, medicos, _medicoController, "Nombre", "Apellido");
+            GridHelper.HabilitarEliminacionConConfirmacion(dgvMedicos, medicos, id => _medicoController.Eliminar(id));
         }
 
         /**
@@ -673,42 +474,6 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar pacientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void LoadAdministradores()
-        {
-            try
-            {
-                string sql = "SELECT Id AS Id, Nombre, Apellido, DNI, Password FROM administradores";
-                DataTable dt = Database.Consultar(sql);
-
-                // Si la consulta retorna null o vacía, dejar la grilla vacía
-                if (dt == null)
-                {
-                    dgvAdministradores.DataSource = null;
-                    return;
-                }
-
-                // Force Nombre/Apellido uppercase in loaded data
-                UppercaseColumns.Intersect(dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName))
-                    .ToList()
-                    .ForEach(col => {
-                        foreach (DataRow r in dt.Rows)
-                        {
-                            if (r[col] != DBNull.Value && r[col] != null)
-                                r[col] = r[col].ToString().ToUpperInvariant();
-                        }
-                    });
-
-                dgvAdministradores.DataSource = dt;
-
-                // Mostrar Id para referencia, mantenerlo ReadOnly
-                ConfigureIdColumn(dgvPacientes, visible: true, allowEdit: false);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar administradores: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

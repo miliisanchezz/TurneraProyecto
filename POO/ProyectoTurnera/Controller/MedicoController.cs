@@ -1,22 +1,35 @@
-﻿using ProyectoTurnera.Model;
-using ProyectoTurnera.Data;
-using System;
+﻿using ProyectoTurnera.Data;
+using ProyectoTurnera.Model;
+using System.Collections.Generic;
 
 namespace ProyectoTurnera.Controller
 {
-    public class MedicoController
+    public class MedicoController : IEntityController<Medico>
     {
-        private readonly MedicoRepository _repo = new MedicoRepository();
 
         public Medico Login(int dni, string password)
         {
-            if (dni <= 0)
-                throw new ArgumentException("El DNI debe ser mayor a 0.", nameof(dni));
-
-            if (string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("La contraseña es obligatoria.", nameof(password));
-
-            return _repo.Login(dni, password);
+            return MedicoRepository.Login(dni, password);
         }
+
+        public List<Medico> ObtenerTodos() => MedicoRepository.GetAll();
+
+        public Medico ObtenerPorId(int id) => MedicoRepository.GetById(id);
+
+        public int Crear(Medico medico)
+        {
+            return MedicoRepository.Insert(medico);
+        }
+
+        public void Actualizar(Medico medico)
+        {
+            MedicoRepository.Update(medico);
+        }
+
+        public void Eliminar(int id)
+        {
+            MedicoRepository.Delete(id);
+        }
+
     }
 }

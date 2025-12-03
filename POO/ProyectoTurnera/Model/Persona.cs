@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProyectoTurnera.Model
+﻿namespace ProyectoTurnera.Model
 {
     public abstract class Persona
     {
@@ -9,13 +7,8 @@ namespace ProyectoTurnera.Model
         public string Apellido { get; set; }
         public int Dni { get; set; }
         public string Password { get; set; }
-        public string NombreCompleto
-        {
-            get
-            {
-                return $"{Nombre} {Apellido}";
-            }
-        }
+ 
+        public Persona() { } // Necesario para binding
         protected Persona(int id, string nombre, string apellido, int dni, string password)
         {
             Id = id;
@@ -24,5 +17,9 @@ namespace ProyectoTurnera.Model
             Dni = dni;
             Password = password;
         }
+
+        public override string ToString() => $"{Nombre} / {Apellido}";
+
+
     }
 }

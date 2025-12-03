@@ -1,58 +1,45 @@
-﻿using Org.BouncyCastle.Crypto.Generators;
-using ProyectoTurnera.Controlador;
-using ProyectoTurnera.Model;
+﻿using ProyectoTurnera.Model;
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace ProyectoTurnera.Data
 {
-    public class MedicoRepository
+    public static class MedicoRepository
     {
-        public Medico Login(int dni, string passwordIngresado)
-        {
-            const string sql = @"
-                SELECT  m.Id, m.Nombre, m.Apellido, m.Dni, m.PasswordHash,
-                        m.Matricula, m.PrecioConsulta,
-                        m.Especialidad, m.Prestador,
-                        e.Id AS EspId, e.Nombre AS EspNombre,
-                        p.Id AS PrestId, p.Nombre AS PrestNombre
-                FROM medicos m
-                INNER JOIN especialidades e ON m.Especialidad = e.Id
-                INNER JOIN prestadores p ON m.Prestador = p.Id
-                WHERE m.Dni = @Dni";
 
-            var param = new SqlParameter("@Dni", SqlDbType.Int) { Value = dni };
-            var dt = BD.Consultar(sql, param);
+        public static Medico Login(int dni, string password)
+        {
+
+            const string sql = @"
+                SELECT  Id, Nombre, Apellido, Dni, Password,´Matricula, PrecioConsulta, Especialidad, Prestador
+                FROM medicos
+                WHERE Dni = @dni AND Password = @password";
+
+            var parametros = new[]
+            {
+                new MySqlParameter("@dni", MySqlDbType.Int32) { Value = dni },
+                new MySqlParameter("@password", MySqlDbType.Text) { Value = password }
+            };
+
+            DataTable dt = Database.Consultar(sql, parametros);
 
             if (dt.Rows.Count == 0)
                 throw new UnauthorizedAccessException("DNI o contraseña incorrectos.");
 
             DataRow r = dt.Rows[0];
 
-            string hashAlmacenado = r["PasswordHash"].ToString();
+            var especialidad =  EspecialidadRepository.GetById(Convert.ToInt32(r["Especialidad"]));
 
-            // Verificación segura de contraseña
-            if (!BCrypt.Net.BCrypt.Verify(passwordIngresado, hashAlmacenado))
-                throw new UnauthorizedAccessException("DNI o contraseña incorrectos.");
-
-            var especialidad = new Especialidad(
-                Convert.ToInt32(r["EspId"]),
-                r["EspNombre"].ToString().Trim()
-            );
-
-            var prestador = new Prestador(
-                Convert.ToInt32(r["PrestId"]),
-                r["PrestNombre"].ToString().Trim(),
-                especialidadActual: null // opcional, si Prestador también tiene especialidad
-            );
+            var prestador = PrestadorRepository.GetById(Convert.ToInt32(r["Prestador"]));
 
             return new Medico(
                 id: Convert.ToInt32(r["Id"]),
-                nombre: r["Nombre"].ToString().Trim(),
-                apellido: r["Apellido"].ToString().Trim(),
+                nombre: r["Nombre"].ToString(),
+                apellido: r["Apellido"].ToString(),
                 dni: Convert.ToInt32(r["Dni"]),
-                passwordHash: hashAlmacenado,
+                password: r["Password"].ToString(),
                 prestador: prestador,
                 especialidad: especialidad,
                 matricula: Convert.ToInt32(r["Matricula"]),
@@ -60,6 +47,117 @@ namespace ProyectoTurnera.Data
             );
         }
 
-        // Puedes agregar GetAll(), GetById(), etc. cuando los necesites
+        public static Medico GetById(int id)
+        {
+            const string sql = @"
+                SELECT  Id, Nombre, Apellido, Dni, Password,´Matricula, PrecioConsulta, Especialidad, Prestador
+                FROM medicos
+                WHERE Id = @Id";
+
+            var param = new MySqlParameter("@Id", MySqlDbType.Int32) { Value = id };
+            var dt = Database.Consultar(sql, param);
+
+            return dt.Rows.Count == 0 ? null : MapRow(dt.Rows[0]);
+        }
+
+        public static List<Medico> GetAll()
+        {
+            const string sql = @"
+                SELECT  Id, Nombre, Apellido, Dni, Password, Matricula, PrecioConsulta, Especialidad, Prestador
+                FROM medicos";
+
+            var dt = Database.Consultar(sql);
+            var lista = new List<Medico>();
+
+            foreach (DataRow row in dt.Rows)
+                lista.Add(MapRow(row));
+
+            return lista;
+        }
+
+        public static int Insert(Medico medico)
+        {
+
+            const string sql = @"
+                INSERT INTO medicos (Nombre, Apellido, DNI, Password, Matricula, PrecioConsulta, Especialidad, Prestador) 
+                VALUES (@Nombre, @Apellido, @DNI,@Password, @Matricula, @PrecioConsulta, @Especialidad, @Prestador)";
+
+            var parametros = new[]
+            {
+                new MySqlParameter("@Nombre", MySqlDbType.Text) { Value = medico.Nombre },
+                new MySqlParameter("@Apellido", MySqlDbType.Text) { Value = medico.Apellido},
+                new MySqlParameter("@DNI", MySqlDbType.Int32) { Value = medico.Dni },
+                new MySqlParameter("@Password", MySqlDbType.Text) { Value = medico.Password },
+                new MySqlParameter("@Matricula", MySqlDbType.Int32) { Value = medico.Matricula },
+                new MySqlParameter("@PrecioConsulta", MySqlDbType.Double) { Value = medico.PrecioConsulta },
+                new MySqlParameter("@Prestador", MySqlDbType.Int32) { Value = medico.Prestador.Id },
+                new MySqlParameter("@Especialidad", MySqlDbType.Int32) { Value = medico.Especialidad.Id }
+            };
+
+            var result = Database.EjecutarEscalar(sql, parametros);
+
+            return Convert.ToInt32(result);
+
+        }
+
+        public static void Update(Medico medico)
+        {
+
+            const string sql = @"
+                UPDATE medicos 
+                SET Nombre = @Nombre, 
+                    Apellido = @Apellido, 
+                    DNI = @DNI,
+                    Password = @Password,
+                    Matricula = @Matricula,
+                    PrecioConsulta = @PrecioConsulta,
+                    Prestador = @Prestador,
+                    Especialidad = @Especialidad
+                WHERE Id = @Id";
+
+            var parametros = new[]
+            {
+                new MySqlParameter("@Id", MySqlDbType.Int32) { Value = medico.Id },
+                new MySqlParameter("@Nombre", MySqlDbType.Text) { Value = medico.Nombre },
+                new MySqlParameter("@Apellido", MySqlDbType.Text) { Value = medico.Apellido},
+                new MySqlParameter("@DNI", MySqlDbType.Int32) { Value = medico.Dni },
+                new MySqlParameter("@Password", MySqlDbType.Text) { Value = medico.Password },
+                new MySqlParameter("@Matricula", MySqlDbType.Int32) { Value = medico.Matricula },
+                new MySqlParameter("@PrecioConsulta", MySqlDbType.Double) { Value = medico.PrecioConsulta },
+                new MySqlParameter("@Prestador", MySqlDbType.Int32) { Value = medico.Prestador.Id },
+                new MySqlParameter("@Especialidad", MySqlDbType.Int32) { Value = medico.Especialidad.Id }
+            };
+
+            Database.Ejecutar(sql, parametros);
+
+        }
+
+        public static void Delete(int id)
+        {
+
+            const string sql = "DELETE FROM medicos WHERE Id = @Id";
+            var param = new MySqlParameter("@Id", MySqlDbType.Int32) { Value = id };
+            Database.Ejecutar(sql, param);
+        }
+
+        private static Medico MapRow(DataRow row)
+        {
+            return new Medico
+            {
+                Id = Convert.ToInt32(row["Id"]),
+                Nombre = row["Nombre"].ToString(),
+                Apellido = row["Apellido"].ToString(),
+                Dni = Convert.ToInt32(row["Dni"]),
+                Password = row["Password"].ToString(),
+                Matricula = Convert.ToInt32(row["Matricula"]),
+                PrecioConsulta = Convert.ToDouble(row["PrecioConsulta"]),
+                Especialidad = EspecialidadRepository.GetById(Convert.ToInt32(row["Especialidad"])),
+                Prestador = PrestadorRepository.GetById(Convert.ToInt32(row["Prestador"]))
+            };
+
+        }
+
+
+
     }
 }

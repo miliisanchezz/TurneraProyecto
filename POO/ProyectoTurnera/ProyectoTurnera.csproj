@@ -102,11 +102,16 @@
     <Compile Include="Controller\AdministradorController.cs" />
     <Compile Include="Controller\ConsultorioController.cs" />
     <Compile Include="Controller\EspecialidadController.cs" />
+    <Compile Include="Controller\IEntityController.cs" />
+    <Compile Include="Controller\MedicoController.cs" />
+    <Compile Include="Controller\PacienteController.cs" />
     <Compile Include="Controller\PrestadorController.cs" />
     <Compile Include="Data\AdministradorRepository.cs" />
     <Compile Include="Data\ConsultorioRepository.cs" />
     <Compile Include="Data\Database.cs" />
     <Compile Include="Data\EspecialidadRepository.cs" />
+    <Compile Include="Data\MedicoRepository.cs" />
+    <Compile Include="Data\PacienteRepository.cs" />
     <Compile Include="Data\PrestadorRepository.cs" />
     <Compile Include="Gui\frmAdministrador.cs">
       <SubType>Form</SubType>
@@ -118,6 +123,8 @@
     <Compile Include="Model\Administrador.cs" />
     <Compile Include="Model\Consultorio.cs" />
     <Compile Include="Model\Especialidad.cs" />
+    <Compile Include="Model\Medico.cs" />
+    <Compile Include="Model\Paciente.cs" />
     <Compile Include="Model\Persona.cs" />
     <Compile Include="Model\Prestador.cs" />
     <Compile Include="Program.cs" />

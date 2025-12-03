@@ -6,9 +6,9 @@ using MySql.Data.MySqlClient;
 
 namespace ProyectoTurnera.Data
 {
-    public class PrestadorRepository
+    public static class PrestadorRepository
     {
-        public Prestador GetById(int id)
+        public static Prestador GetById(int id)
         {
             const string sql = "SELECT Id, Nombre FROM prestadores WHERE Id = @Id";
             var param = new MySqlParameter("@Id", MySqlDbType.Int32) { Value = id };
@@ -17,9 +17,9 @@ namespace ProyectoTurnera.Data
             return dt.Rows.Count == 0 ? null : MapRow(dt.Rows[0]);
         }
 
-        public List<Prestador> GetAll()
+        public static List<Prestador> GetAll()
         {
-            const string sql = "SELECT Id, Nombre FROM prestadores ORDER BY Nombre";
+            const string sql = "SELECT Id, Nombre FROM prestadores";
             var dt = Database.Consultar(sql);
             var lista = new List<Prestador>();
 
@@ -29,29 +29,20 @@ namespace ProyectoTurnera.Data
             return lista;
         }
 
-        public int Insert(string nombre)
+        public static int Insert(Prestador prestador)
         {
-            if (string.IsNullOrWhiteSpace(nombre))
-                throw new ArgumentException("El nombre del prestador es obligatorio.");
-
             const string sql = @"
-                INSERT INTO prestadores (Nombre) 
-                VALUES (@Nombre); 
-                SELECT SCOPE_IDENTITY();";
+                INSERT INTO prestadores(Nombre) 
+                VALUES (@Nombre)";
 
-            var param = new MySqlParameter("@Nombre", MySqlDbType.VarChar, 150) { Value = nombre.Trim() };
+            var param = new MySqlParameter("@Nombre", MySqlDbType.Text) { Value = prestador.Nombre };
             var result = Database.EjecutarEscalar(sql, param);
 
             return Convert.ToInt32(result);
         }
 
-        public void Update(Prestador prestador)
+        public static  void Update(Prestador prestador)
         {
-            if (prestador == null) throw new ArgumentNullException(nameof(prestador));
-            if (prestador.Id <= 0) throw new ArgumentException("ID inválido.");
-            if (string.IsNullOrWhiteSpace(prestador.Nombre))
-                throw new ArgumentException("El nombre no puede estar vacío.");
-
             const string sql = "UPDATE prestadores SET Nombre = @Nombre WHERE Id = @Id";
 
             var parametros = new[]
@@ -63,10 +54,8 @@ namespace ProyectoTurnera.Data
             Database.Ejecutar(sql, parametros);
         }
 
-        public void Delete(int id)
+        public static  void Delete(int id)
         {
-            if (id <= 0) throw new ArgumentException("ID inválido.");
-
             const string sql = "DELETE FROM prestadores WHERE Id = @Id";
             var param = new MySqlParameter("@Id", MySqlDbType.Int32) { Value = id };
             Database.Ejecutar(sql, param);

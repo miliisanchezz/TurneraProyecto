@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProyectoTurnera.Model
+﻿namespace ProyectoTurnera.Model
 {
     public class Prestador
     {
@@ -12,7 +10,7 @@ namespace ProyectoTurnera.Model
         public Prestador(int id, string nombre)
         {
             Id = id;
-            Nombre = nombre?.Trim() ?? throw new ArgumentNullException(nameof(nombre));
+            Nombre = nombre;
         }
 
         public override string ToString() => Nombre;

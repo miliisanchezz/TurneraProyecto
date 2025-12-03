@@ -1,31 +1,29 @@
 ﻿using ProyectoTurnera.Data;
 using ProyectoTurnera.Model;
-using System;
 using System.Collections.Generic;
 
 namespace ProyectoTurnera.Controller
 {
-    public class EspecialidadController
+    public class EspecialidadController : IEntityController<Especialidad>
     {
-        private readonly EspecialidadRepository _repo = new EspecialidadRepository();
 
-        public List<Especialidad> ObtenerTodos() => _repo.GetAll();
+        public List<Especialidad> ObtenerTodos() => EspecialidadRepository.GetAll();
 
-        public Especialidad ObtenerPorId(int id) => _repo.GetById(id);
+        public Especialidad ObtenerPorId(int id) => EspecialidadRepository.GetById(id);
 
-        public int Crear(string nombre)
+        public int Crear(Especialidad especialidad)
         {
-            return _repo.Insert(nombre);
+            return EspecialidadRepository.Insert(especialidad);
         }
 
         public void Actualizar(Especialidad especialidad)
         {
-            _repo.Update(especialidad);
+            EspecialidadRepository.Update(especialidad);
         }
 
         public void Eliminar(int id)
         {
-            _repo.Delete(id);
+            EspecialidadRepository.Delete(id);
         }
     }
 }

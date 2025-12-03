@@ -1,5 +1,8 @@
-﻿using ProyectoTurnera.Controlador;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 
 namespace ProyectoTurnera.Model
 {
@@ -8,12 +11,20 @@ namespace ProyectoTurnera.Model
         public Prestador Prestador { get; set; }
         public string Telefono { get; set; }
 
-        public Paciente(int id, string nombre, string apellido, int dni, string passwordHash,
+        // Esta propiedad es SOLO para el binding en la grilla
+        [DisplayName("Prestador")]
+        public string PrestadorNombre => Prestador?.Nombre ?? "";
+        [Browsable(false)]
+        public static List<Prestador> PrestadoresDisponibles { get; set; } = new List<Prestador>();
+
+        public Paciente() : base() { } // Necesario para binding
+
+        public Paciente(int id, string nombre, string apellido, int dni, string password,
                         Prestador prestador, string telefono)
-            : base(id, nombre, apellido, dni, passwordHash)
+            : base(id, nombre, apellido, dni, password)
         {
-            Prestador = prestador ?? throw new ArgumentNullException(nameof(prestador));
-            Telefono = telefono ?? "";
+            Prestador = prestador;
+            Telefono = telefono;
         }
     }
 }

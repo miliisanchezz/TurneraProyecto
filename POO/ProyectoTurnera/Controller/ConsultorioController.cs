@@ -1,31 +1,29 @@
 ﻿using ProyectoTurnera.Data;
 using ProyectoTurnera.Model;
-using System;
 using System.Collections.Generic;
 
 namespace ProyectoTurnera.Controller
 {
-    public class ConsultorioController
+    public class ConsultorioController: IEntityController<Consultorio>
     {
-        private readonly ConsultorioRepository _repo = new ConsultorioRepository();
 
-        public List<Consultorio> ObtenerTodos() => _repo.GetAll();
+        public List<Consultorio> ObtenerTodos() => ConsultorioRepository.GetAll();
 
-        public Consultorio ObtenerPorId(int id) => _repo.GetById(id);
+        public Consultorio ObtenerPorId(int id) => ConsultorioRepository.GetById(id);
 
-        public int Crear(string nombre, string direccion, string numero)
+        public int Crear(Consultorio consultorio)
         {
-            return _repo.Insert(nombre, direccion, numero);
+            return ConsultorioRepository.Insert(consultorio);
         }
 
         public void Actualizar(Consultorio consultorio)
         {
-            _repo.Update(consultorio);
+            ConsultorioRepository.Update(consultorio);
         }
 
         public void Eliminar(int id)
         {
-            _repo.Delete(id);
+            ConsultorioRepository.Delete(id);
         }
     }
 }

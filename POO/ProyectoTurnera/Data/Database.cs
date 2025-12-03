@@ -32,7 +32,7 @@ namespace ProyectoTurnera.Data
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Error al ejecutar consulta: {sql}", ex);
+                    throw new Exception(ex.Message);
                 }
             }
 
@@ -55,7 +55,7 @@ namespace ProyectoTurnera.Data
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Error al ejecutar comando: {sql}", ex);
+                    throw new Exception(ex.Message);
                 }
             }
         }
@@ -83,7 +83,7 @@ namespace ProyectoTurnera.Data
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Error al ejecutar escalar: {sql}", ex);
+                    throw new Exception(ex.Message);
                 }
             }
         }

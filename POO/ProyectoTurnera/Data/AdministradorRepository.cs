@@ -6,9 +6,9 @@ using MySql.Data.MySqlClient;
 
 namespace ProyectoTurnera.Data
 {
-    public class AdministradorRepository
+    public static class AdministradorRepository
     {
-        public Administrador Login(int dni, string password)
+        public static Administrador Login(int dni, string password)
         {
 
             const string sql = @"
@@ -40,11 +40,11 @@ namespace ProyectoTurnera.Data
 
         }
 
-        public Administrador GetById(int id)
+        public static Administrador GetById(int id)
         {
             const string sql = @"
                 SELECT Id, Nombre, Apellido, Dni, Password 
-                FROM consultorios 
+                FROM administradores 
                 WHERE Id = @Id";
 
             var param = new MySqlParameter("@Id", MySqlDbType.Int32) { Value = id };
@@ -53,12 +53,11 @@ namespace ProyectoTurnera.Data
             return dt.Rows.Count == 0 ? null : MapRow(dt.Rows[0]);
         }
 
-        public List<Administrador> GetAll()
+        public static List<Administrador> GetAll()
         {
             const string sql = @"
                 SELECT Id, Nombre, Apellido, Dni, Password 
-                FROM consultorios 
-                ORDER BY Nombre";
+                FROM administradores";
 
             var dt = Database.Consultar(sql);
             var lista = new List<Administrador>();
@@ -69,20 +68,19 @@ namespace ProyectoTurnera.Data
             return lista;
         }
 
-        public int Insert(string nombre, string apellido, int dni, string password)
+        public static int Insert(Administrador administrador)
         {
 
             const string sql = @"
                 INSERT INTO administradores (Nombre, Apellido, DNI, Password) 
-                VALUES (@Nombre, @Apellido, @DNI,@Password);
-                SELECT SCOPE_IDENTITY();";
+                VALUES (@Nombre, @Apellido, @DNI, @Password)";
 
             var parametros = new[]
             {
-                new MySqlParameter("@Nombre", MySqlDbType.Text) { Value = (object)nombre.Trim() },
-                new MySqlParameter("@Apellido", MySqlDbType.Text) { Value = (object)apellido?.Trim()},
-                new MySqlParameter("@DNI", MySqlDbType.Int32) { Value = (object)dni },
-                new MySqlParameter("@Password", MySqlDbType.Text) { Value = (object)password.Trim() }
+                new MySqlParameter("@Nombre", MySqlDbType.Text) { Value = administrador.Nombre },
+                new MySqlParameter("@Apellido", MySqlDbType.Text) { Value = administrador.Apellido },
+                new MySqlParameter("@DNI", MySqlDbType.Int32) { Value = administrador.Dni },
+                new MySqlParameter("@Password", MySqlDbType.Text) { Value = administrador.Password }
             };
 
             var result = Database.EjecutarEscalar(sql, parametros);
@@ -91,15 +89,14 @@ namespace ProyectoTurnera.Data
 
         }
 
-        public void Update(Administrador administrador)
+        public static void Update(Administrador administrador)
         {
-
             const string sql = @"
-                UPDATE administradpres 
+                UPDATE administradores 
                 SET Nombre = @Nombre, 
                     Apellido = @Apellido, 
                     DNI = @DNI,
-                    @Password = @Password
+                    Password = @Password
                 WHERE Id = @Id";
 
             var parametros = new[]
@@ -114,7 +111,7 @@ namespace ProyectoTurnera.Data
 
         }
 
-        public void Delete(int id)
+        public static void Delete(int id)
         {
 
             const string sql = "DELETE FROM administradores WHERE Id = @Id";

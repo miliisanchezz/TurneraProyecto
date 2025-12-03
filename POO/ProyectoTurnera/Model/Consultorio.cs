@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace ProyectoTurnera.Model
+﻿namespace ProyectoTurnera.Model
 {
     public class Consultorio
     {
@@ -14,8 +12,8 @@ namespace ProyectoTurnera.Model
         public Consultorio(int id, string nombre, string direccion, int numeroConsultorio)
         {
             Id = id;
-            Nombre = nombre?.Trim();
-            Direccion = direccion?.Trim();
+            Nombre = nombre;
+            Direccion = direccion;
             NumeroConsultorio = numeroConsultorio;
         }
         public override string ToString() => $"{Nombre} / {Direccion} / {NumeroConsultorio}";

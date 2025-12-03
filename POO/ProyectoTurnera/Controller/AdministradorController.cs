@@ -1,37 +1,35 @@
 ﻿using ProyectoTurnera.Data;
 using ProyectoTurnera.Model;
-using System;
 using System.Collections.Generic;
 
 namespace ProyectoTurnera.Controller
 { 
 
-    public class AdministradorController
+    public class AdministradorController : IEntityController<Administrador>
     {
-        private readonly AdministradorRepository _repo = new AdministradorRepository();
 
         public Administrador Login(int dni, string password)
         {
-            return _repo.Login(dni, password);
+            return AdministradorRepository.Login(dni, password);
         }
 
-        public List<Administrador> ObtenerTodos() => _repo.GetAll();
+        public List<Administrador> ObtenerTodos() => AdministradorRepository.GetAll();
 
-        public Administrador ObtenerPorId(int id) => _repo.GetById(id);
+        public Administrador ObtenerPorId(int id) => AdministradorRepository.GetById(id);
 
-        public int Crear(string nombre, string apellido, int dni, string pass)
+        public int Crear(Administrador administrador)
         {
-            return _repo.Insert(nombre, apellido, dni, pass);
+            return AdministradorRepository.Insert(administrador);
         }
 
         public void Actualizar(Administrador administrador)
         {
-            _repo.Update(administrador);
+            AdministradorRepository.Update(administrador);
         }
 
         public void Eliminar(int id)
         {
-            _repo.Delete(id);
+            AdministradorRepository.Delete(id);
         }
 
     }
