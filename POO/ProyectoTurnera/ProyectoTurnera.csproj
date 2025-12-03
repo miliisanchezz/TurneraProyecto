@@ -99,6 +99,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\TurnoController.cs" />
     <Compile Include="Controller\AdministradorController.cs" />
     <Compile Include="Controller\ConsultorioController.cs" />
     <Compile Include="Controller\EspecialidadController.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Controller\MedicoController.cs" />
     <Compile Include="Controller\PacienteController.cs" />
     <Compile Include="Controller\PrestadorController.cs" />
+    <Compile Include="Data\TurnoRepository.cs" />
     <Compile Include="Data\AdministradorRepository.cs" />
     <Compile Include="Data\ConsultorioRepository.cs" />
     <Compile Include="Data\Database.cs" />
@@ -116,12 +118,19 @@
     <Compile Include="Gui\frmAdministrador.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Gui\frmMedico.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\frmPaciente.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Gui\Helpers\GridHelper.cs" />
     <Compile Include="Gui\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Model\Administrador.cs" />
     <Compile Include="Model\Consultorio.cs" />
+    <Compile Include="Model\Turno.cs" />
     <Compile Include="Model\Especialidad.cs" />
     <Compile Include="Model\Medico.cs" />
     <Compile Include="Model\Paciente.cs" />
@@ -131,6 +140,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Gui\frmAdministrador.resx">
       <DependentUpon>frmAdministrador.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\frmMedico.resx">
+      <DependentUpon>frmMedico.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\frmPaciente.resx">
+      <DependentUpon>frmPaciente.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

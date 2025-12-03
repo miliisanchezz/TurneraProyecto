@@ -15,6 +15,11 @@ namespace ProyectoTurnera.Model
         [DisplayName("Prestador")]
         public string PrestadorNombre => Prestador?.Nombre ?? "";
         [Browsable(false)]
+        public int PrestadorId
+        {
+            get => Prestador?.Id ?? 0;
+            set => Prestador = Paciente.PrestadoresDisponibles?.FirstOrDefault(p => p.Id == value);
+        }
         public static List<Prestador> PrestadoresDisponibles { get; set; } = new List<Prestador>();
 
         public Paciente() : base() { } // Necesario para binding

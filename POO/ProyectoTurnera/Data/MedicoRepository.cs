@@ -13,7 +13,7 @@ namespace ProyectoTurnera.Data
         {
 
             const string sql = @"
-                SELECT  Id, Nombre, Apellido, Dni, Password,´Matricula, PrecioConsulta, Especialidad, Prestador
+                SELECT  Id, Nombre, Apellido, Dni, Password, Matricula, PrecioConsulta, Especialidad, Prestador
                 FROM medicos
                 WHERE Dni = @dni AND Password = @password";
 
@@ -63,7 +63,7 @@ namespace ProyectoTurnera.Data
         public static List<Medico> GetAll()
         {
             const string sql = @"
-                SELECT  Id, Nombre, Apellido, Dni, Password, Matricula, PrecioConsulta, Especialidad, Prestador
+                SELECT  Id, Nombre, Apellido, Dni, Password, Matricula, PrecioConsulta, Especialidad, Prestador 
                 FROM medicos";
 
             var dt = Database.Consultar(sql);

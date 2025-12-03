@@ -1,17 +1,26 @@
-using Mysqlx.Cursor;
+using ProyectoTurnera.Controller;
+using ProyectoTurnera.Gui.Helpers;
+using ProyectoTurnera.Model;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using ProyectoTurnera.Controlador;
 
 namespace ProyectoTurnera.Gui
 {
     public class frmPaciente : Form
     {
         private readonly Paciente paciente;
+
+        private readonly AdministradorController _administradorController = new AdministradorController();
+        private readonly PacienteController _pacienteController = new PacienteController();
+        private readonly MedicoController _medicoController = new MedicoController();
+        private readonly PrestadorController _prestadorController = new PrestadorController();
+        private readonly EspecialidadController _especialidadController = new EspecialidadController();
+        private readonly ConsultorioController _consultorioController = new ConsultorioController();
 
         // UI
         private TabControl tabControl;
@@ -39,7 +48,9 @@ namespace ProyectoTurnera.Gui
 
         private void InitializeComponents()
         {
-            Text = "Paciente";
+
+            this.Text = "Paciente :: " + this.paciente.ToString();
+
             StartPosition = FormStartPosition.CenterScreen;
             Size = new Size(900, 600);
 
@@ -121,7 +132,7 @@ namespace ProyectoTurnera.Gui
         }
 
         private void LoadPendientes()
-        {
+        { /*
             try
             {
                 if (paciente.Id <= 0)
@@ -168,31 +179,19 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar pendientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            } */
         }
 
         private void LoadEspecialidades()
         {
-            try
-            {
-                DataTable dt = BD.Consultar("SELECT Id, Nombre FROM especialidades ORDER BY Nombre");
-                if (dt == null)
-                    return;
-
-                var rowAll = dt.NewRow();
-                rowAll["Id"] = DBNull.Value;
-                rowAll["Nombre"] = "-- Seleccione --";
-                dt.Rows.InsertAt(rowAll, 0);
-
-                cbEspecialidad.DataSource = dt;
-                cbEspecialidad.ValueMember = "Id";
-                cbEspecialidad.DisplayMember = "Nombre";
-            }
-            catch { }
+            var especialidades = new BindingList<Especialidad>(_especialidadController.ObtenerTodos());
+            cbEspecialidad.DataSource = especialidades;
+            cbEspecialidad.ValueMember = "Id";
+            cbEspecialidad.DisplayMember = "";
         }
 
         private void LoadDisponibles()
-        {
+        { /*
             try
             {
                 if (cbEspecialidad.SelectedValue == null || cbEspecialidad.SelectedValue == DBNull.Value)
@@ -273,11 +272,11 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al buscar turnos disponibles: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            } */
         }
 
         private void ReservarTurnoSeleccionado()
-        {
+        { /*
             try
             {
                 if (dgvDisponibles.CurrentRow == null)
@@ -316,12 +315,12 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al reservar turno: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            } */
         }
 
         // Handle Delete key to remove selected turnos from DB
         private void DgvPendientes_KeyDown(object sender, KeyEventArgs e)
-        {
+        { /*
             if (e.KeyCode != Keys.Delete)
                 return;
 
@@ -355,7 +354,7 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al eliminar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            } */
         }
     }
 }

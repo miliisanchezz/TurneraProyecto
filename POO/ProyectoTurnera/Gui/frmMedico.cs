@@ -1,17 +1,26 @@
-﻿using System;
+﻿using ProyectoTurnera.Controller;
+using ProyectoTurnera.Gui.Helpers;
+using ProyectoTurnera.Model;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using ProyectoTurnera.Controlador;
-
 
 namespace ProyectoTurnera.Gui
 {
     public class frmMedico : Form
     {
         private readonly Medico medico;
+
+        private readonly AdministradorController _administradorController = new AdministradorController();
+        private readonly PacienteController _pacienteController = new PacienteController();
+        private readonly MedicoController _medicoController = new MedicoController();
+        private readonly PrestadorController _prestadorController = new PrestadorController();
+        private readonly EspecialidadController _especialidadController = new EspecialidadController();
+        private readonly ConsultorioController _consultorioController = new ConsultorioController();
 
         private TabControl tabControl;
         private TabPage tabPendientes;
@@ -53,7 +62,8 @@ namespace ProyectoTurnera.Gui
 
         private void InitializeComponents()
         {
-            Text = "Médico";
+            this.Text = "Médico :: " + this.medico.ToString();
+
             StartPosition = FormStartPosition.CenterScreen;
             Size = new Size(900, 600);
 
@@ -137,7 +147,7 @@ namespace ProyectoTurnera.Gui
         }
 
         private void LoadPendientes()
-        {
+        { /*
             try
             {
                 if (medico.Id <= 0)
@@ -187,11 +197,11 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar pendientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }  */
         }
 
         private void LoadTurnos()
-        {
+        { /*
             try
             {
                 if (medico.Id <= 0)
@@ -237,7 +247,7 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            } */
         }
 
         private DateTime ComputeWeekStart(DateTime date)
@@ -247,7 +257,7 @@ namespace ProyectoTurnera.Gui
         }
 
         private void LoadEstaSemana()
-        {
+        { /*
             try
             {
                 var weekStart = currentWeekStart;
@@ -385,11 +395,11 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar esta semana: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            } */
         }
 
         private void MarkPendientesEstado(int estado)
-        {
+        { /*
             try
             {
                 var ids = new List<int>();
@@ -414,12 +424,12 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al asignar estado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            } */
         }
 
         // Handle Delete key to cancel (clear paciente) on Pendientes tab
         private void DgvPendientes_KeyDown(object sender, KeyEventArgs e)
-        {
+        { /*
             if (e.KeyCode != Keys.Delete)
                 return;
 
@@ -453,7 +463,7 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cancelar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            } */
         }
     }
 }

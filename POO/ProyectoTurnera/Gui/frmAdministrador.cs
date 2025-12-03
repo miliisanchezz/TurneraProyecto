@@ -154,11 +154,9 @@ namespace ProyectoTurnera.Gui
             AttachCrudHandlers(dgvPacientes, "pacientes", LoadPacientes);
             AttachCrudHandlers(dgvMedicos, "medicos", LoadMedicos);
             
-            
-            /*
             SetupTurnosTab();
 
-            SetupReportTab();*/
+            SetupReportTab();
 
             this.FormClosed += FrmAdministrador_FormClosed;
 
@@ -345,14 +343,13 @@ namespace ProyectoTurnera.Gui
             var pacientes = new BindingList<Paciente>(_pacienteController.ObtenerTodos());
 
             // 1. Configurar columnas (aún sin Prestador como combo)
-            GridHelper.ConfigurarColumnasPacientes(dgvPacientes);
+            GridHelper.ConfigurarColumnasPacientes(dgvPacientes, prestadores);
 
             // 2. CONVERTIR a ComboBox ANTES del DataSource !!!
             GridHelper.HabilitarComboConActualizacion(
                 dgvPacientes,
                 "Prestador",
-                prestadores.Cast<object>().ToList(),
-                (entidad, seleccionado) => ((Paciente)entidad).Prestador = seleccionado as Prestador
+                prestadores.ToList()
             );
 
             // 3. AHORA sí asignar DataSource (aquí se crean las celdas correctas)
@@ -378,15 +375,13 @@ namespace ProyectoTurnera.Gui
             GridHelper.HabilitarComboConActualizacion(
                 dgvMedicos,
                 "Prestador",
-                prestadores.Cast<object>().ToList(),
-                (entidad, seleccionado) => ((Medico)entidad).Prestador = seleccionado as Prestador
+                prestadores.Cast<object>().ToList()
             );
 
             GridHelper.HabilitarComboConActualizacion(
                 dgvMedicos,
                 "Especialidad",
-                especialidades.Cast<object>().ToList(),
-                (entidad, seleccionado) => ((Medico)entidad).Especialidad = seleccionado as Especialidad
+                especialidades.Cast<object>().ToList()
             );
 
             // 3. AHORA sí asignar DataSource (aquí se crean las celdas correctas)
@@ -396,180 +391,6 @@ namespace ProyectoTurnera.Gui
             GridHelper.ConfigureIdColumn(dgvMedicos, visible: true, allowEdit: false);
             GridHelper.HabilitarEdicionInline(dgvMedicos, medicos, _medicoController, "Nombre", "Apellido");
             GridHelper.HabilitarEliminacionConConfirmacion(dgvMedicos, medicos, id => _medicoController.Eliminar(id));
-        }
-
-        /**
-        private void LoadPacientes()
-        {
-            try
-            {
-                string sql = "SELECT Id AS Id, Nombre, Apellido, DNI, Password, Prestador, Telefono FROM pacientes";
-                DataTable dt = Database.Consultar(sql);
-
-                // Si la consulta retorna null o vacía, dejar la grilla vacía
-                if (dt == null)
-                {
-                    dgvPacientes.DataSource = null;
-                    return;
-                }
-
-                // Force Nombre/Apellido uppercase in loaded data
-                UppercaseColumns.Intersect(dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName))
-                    .ToList()
-                    .ForEach(col => {
-                        foreach (DataRow r in dt.Rows)
-                        {
-                            if (r[col] != DBNull.Value && r[col] != null)
-                                r[col] = r[col].ToString().ToUpperInvariant();
-                        }
-                    });
-
-                dgvPacientes.DataSource = dt;
-
-                SetupPrestadorCombo(dgvPacientes);
-
-
-                // Mostrar Id para referencia, mantenerlo ReadOnly
-                ConfigureIdColumn(dgvPacientes, visible: true, allowEdit: false);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar pacientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void LoadMedicos()
-        {
-            try
-            {
-                string sql = "SELECT Id AS Id, Nombre, Apellido, DNI, Password, Especialidad, Matricula, Prestador, PrecioConsulta FROM medicos";
-                DataTable dt = Database.Consultar(sql);
-
-                // Si la consulta retorna null o vacía, dejar la grilla vacía
-                if (dt == null)
-                {
-                    dgvMedicos.DataSource = null;
-                    return;
-                }
-
-                // Force Nombre/Apellido uppercase in loaded data
-                UppercaseColumns.Intersect(dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName))
-                    .ToList()
-                    .ForEach(col => {
-                        foreach (DataRow r in dt.Rows)
-                        {
-                            if (r[col] != DBNull.Value && r[col] != null)
-                                r[col] = r[col].ToString().ToUpperInvariant();
-                        }
-                    });
-
-                dgvMedicos.DataSource = dt;
-
-                SetupEspecialidadCombo(dgvMedicos);
-                SetupPrestadorCombo(dgvMedicos);
-
-                // Mostrar Id para referencia, mantenerlo ReadOnly
-                ConfigureIdColumn(dgvMedicos, visible: true, allowEdit: false);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar pacientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        // Add this helper method inside the frmAdministrador class (for example, place it just after ConfigureIdColumn):
-        private void SetupPrestadorCombo(DataGridView grid)
-        {
-            try
-            {
-                // Load prestadores (Id, Nombre)
-                DataTable dtPrestadores = Database.Consultar("SELECT Id, Nombre FROM prestadores");
-                if (dtPrestadores == null)
-                    return;
-
-                // Find existing Prestador column and record its index
-                int insertIndex = -1;
-                var existing = grid.Columns.Cast<DataGridViewColumn>()
-                    .FirstOrDefault(c => string.Equals(
-                        string.IsNullOrWhiteSpace(c.DataPropertyName) ? c.Name : c.DataPropertyName,
-                        "Prestador", StringComparison.OrdinalIgnoreCase));
-
-                if (existing != null)
-                {
-                    insertIndex = existing.Index;
-                    grid.Columns.Remove(existing);
-                }
-
-                // Create combo column bound to the numeric Id but showing Nombre
-                var combo = new DataGridViewComboBoxColumn
-                {
-                    Name = "Prestador",
-                    HeaderText = "Prestador",
-                    DataPropertyName = "Prestador", // binds to the Id value in the data source
-                    DataSource = dtPrestadores,
-                    DisplayMember = "Nombre",
-                    ValueMember = "Id",
-                    FlatStyle = FlatStyle.Flat,
-                    DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
-                };
-                
-                // Insert at the original column index if known; otherwise append
-                if (insertIndex >= 0 && insertIndex <= grid.Columns.Count)
-                    grid.Columns.Insert(insertIndex, combo);
-                else
-                    grid.Columns.Add(combo);
-            }
-            catch (Exception)
-            {
-                // noncritical for UI; keep original column if something fails
-            }
-        }
-
-        private void SetupEspecialidadCombo(DataGridView grid)
-        {
-            try
-            {
-                // Load prestadores (Id, Nombre)
-                DataTable dtEspecialidades = Database.Consultar("SELECT Id, Nombre FROM especialidades");
-                if (dtEspecialidades == null)
-                    return;
-
-                // Find existing Prestador column and record its index
-                int insertIndex = -1;
-                var existing = grid.Columns.Cast<DataGridViewColumn>()
-                    .FirstOrDefault(c => string.Equals(
-                        string.IsNullOrWhiteSpace(c.DataPropertyName) ? c.Name : c.DataPropertyName,
-                        "Especialidad", StringComparison.OrdinalIgnoreCase));
-
-                if (existing != null)
-                {
-                    insertIndex = existing.Index;
-                    grid.Columns.Remove(existing);
-                }
-
-                // Create combo column bound to the numeric Id but showing Nombre
-                var combo = new DataGridViewComboBoxColumn
-                {
-                    Name = "Especialidad",
-                    HeaderText = "Especialidad",
-                    DataPropertyName = "Especialidad", // binds to the Id value in the data source
-                    DataSource = dtEspecialidades,
-                    DisplayMember = "Nombre",
-                    ValueMember = "Id",
-                    FlatStyle = FlatStyle.Flat,
-                    DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
-                };
-
-                // Insert at the original column index if known; otherwise append
-                if (insertIndex >= 0 && insertIndex <= grid.Columns.Count)
-                    grid.Columns.Insert(insertIndex, combo);
-                else
-                    grid.Columns.Add(combo);
-            }
-            catch (Exception)
-            {
-                // noncritical for UI; keep original column if something fails
-            }
         }
 
         private void SetupTurnosTab()
@@ -670,6 +491,7 @@ namespace ProyectoTurnera.Gui
 
         private void DgvTurnos_KeyDown(object sender, KeyEventArgs e)
         {
+            /*
             if (e.KeyCode != Keys.Delete)
                 return;
 
@@ -727,35 +549,31 @@ namespace ProyectoTurnera.Gui
             }
 
             // Refresh grid after deletes
-            LoadTurnos();
+            LoadTurnos();*/
         }
 
         private void LoadMedicosForTurnos()
         {
-            try
-            {
-                DataTable dt = Database.Consultar("SELECT Id, CONCAT(Nombre, ' ', Apellido) AS DisplayName FROM medicos");
-                if (dt == null)
-                    return;
-                cbMedicoTurnos.DataSource = dt;
-                cbMedicoTurnos.ValueMember = "Id";
-                cbMedicoTurnos.DisplayMember = "DisplayName";
-            }
-            catch { }
+
+            var medicos = new BindingList<Medico>(_medicoController.ObtenerTodos());
+            cbMedicoTurnos.DataSource = medicos;
+            cbMedicoTurnos.ValueMember = "Id";
+            cbMedicoTurnos.DisplayMember = "";
+
         }
 
         private void LoadConsultoriosForTurnos()
         {
 
-            var data = new BindingList<Consultorio>(Consultorio.GetAll());
-            cbConsultorioTurnos.DataSource = data;
-            cbConsultorioTurnos.DisplayMember = "NombreCompleto";
+            var consultorios = new BindingList<Consultorio>(_consultorioController.ObtenerTodos());
+            cbConsultorioTurnos.DataSource = consultorios;
             cbConsultorioTurnos.ValueMember = "Id";
+            cbConsultorioTurnos.DisplayMember = "";
 
         }
 
         private void LoadTurnos()
-        {
+        {  /*
             try
             {
                 var first = new DateTime(dtpMonthYear.Value.Year, dtpMonthYear.Value.Month, 1);
@@ -785,11 +603,12 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }*/
         }
 
         private void GenerateTurnos()
         {
+            /*
             try
             {
                 if (cbMedicoTurnos.SelectedValue == null || cbConsultorioTurnos.SelectedValue == null)
@@ -875,11 +694,11 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al generar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }*/
         }
 
-private void SetupReportTab()
-        {
+        private void SetupReportTab()
+        {/*
             try
             {
                 tabReportes.Controls.Clear();
@@ -953,11 +772,12 @@ private void SetupReportTab()
             catch (Exception ex)
             {
                 MessageBox.Show("Error al inicializar Reportes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }*/
         }
 
         private void RunReport()
         {
+            /*
             try
             {
                 DateTime start = dtpReportFrom.Value.Date;
@@ -1093,8 +913,8 @@ private void SetupReportTab()
             catch (Exception ex)
             {
                 MessageBox.Show("Error al ejecutar reporte: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        } */
+            }*/
+        }
 
     }
 

@@ -94,15 +94,22 @@ namespace ProyectoTurnera.Gui
                 }
                 else if (rbMedico.Checked)
                 {
-                    //new frmMedico(Medico.Login(dni, pwd)).Show();
+
+                    MedicoController administradorcontroller = new MedicoController();
+
+                    Medico medico = administradorcontroller.Login(dni, password);
+
+                    new frmMedico(medico).Show();
 
                 }
                 else if (rbPaciente.Checked)
                 {
 
-                    // 666 _logincontroller = new PacienteController();
+                    PacienteController administradorcontroller = new PacienteController();
 
-                    //new frmPaciente(Paciente.Login(dni, pwd)).Show();
+                    Paciente paciente = administradorcontroller.Login(dni, password);
+
+                    new frmPaciente(paciente).Show();
                 }
                 else
                 {

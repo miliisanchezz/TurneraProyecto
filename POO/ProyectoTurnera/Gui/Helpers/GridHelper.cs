@@ -382,7 +382,7 @@ namespace ProyectoTurnera.Gui.Helpers
 
         }
 
-        public static void ConfigurarColumnasPacientes(DataGridView gv)
+        public static void ConfigurarColumnasPacientes(DataGridView gv, List<Prestador> prestadores)
         {
             gv.AutoGenerateColumns = false;
             gv.Columns.Clear();
@@ -439,13 +439,12 @@ namespace ProyectoTurnera.Gui.Helpers
             {
                 Name = "Prestador",
                 HeaderText = "Prestador",
-                DataPropertyName = "PrestadorNombre", // o lo que uses para mostrar
+                DataPropertyName = "PrestadorId",    // ← BINDEA AL ID!
                 DisplayMember = "Nombre",
-                ValueMember = "Nombre",
-                Width = 100,
+                ValueMember = "Id",                  // ← Compara por Id
+                Width = 150,
                 FlatStyle = FlatStyle.Flat
             });
-
 
         }
 
@@ -525,41 +524,19 @@ namespace ProyectoTurnera.Gui.Helpers
             });
 
         }
-
-        public static void HabilitarComboConActualizacion(
+        public static void HabilitarComboConActualizacion<T>(
             DataGridView dgv,
             string nombreColumna,
-            List<object> listaOpciones,
-            Action<object, object> actualizarEntidad)  // ← ESTE ES EL TRUCO
+            List<T> listaOpciones)
         {
-            // 1. Convertir la columna en ComboBox
-            if (dgv.Columns.Contains(nombreColumna))
+            if (dgv.Columns[nombreColumna] is DataGridViewComboBoxColumn col)
             {
-                var col = (DataGridViewComboBoxColumn) dgv.Columns[nombreColumna];
                 col.DataSource = listaOpciones;
+                col.ValueMember = "Id";
+                col.DisplayMember = "Nombre";
+                col.ReadOnly = false;
             }
-
-            // 2. Al terminar de editar → actualizamos el objeto
-            dgv.CellEndEdit += (s, e) =>
-            {
-                if (e.ColumnIndex < 0 || e.RowIndex < 0) return;
-                if (dgv.Columns[e.ColumnIndex].Name != nombreColumna) return;
-
-                var valor = dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
-                if (string.IsNullOrEmpty(valor)) return;
-
-                var entidad = dgv.Rows[e.RowIndex].DataBoundItem;
-                if (entidad == null) return;
-
-                // Buscamos el objeto completo por el nombre
-                var seleccionado = listaOpciones
-                    .FirstOrDefault(x => x.GetType().GetProperty("Nombre")?.GetValue(x)?.ToString() == valor);
-
-                // ¡AQUÍ USAMOS LA ACCIÓN QUE NOS PASASTE!
-                actualizarEntidad(entidad, seleccionado);
-            };
         }
-        
 
     }
 
