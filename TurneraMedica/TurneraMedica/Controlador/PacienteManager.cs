@@ -7,26 +7,45 @@ namespace TurneraMedica.Controlador
 {
     public class PacienteManager
     {
+        // Para los combos (FormCrearTurno)
         public static List<Paciente> GetPacientes()
         {
-            List<Paciente> lista = new List<Paciente>();
+            return ObtenerTodos(); // reutiliza el mismo método
+        }
 
+        // Para el formulario de lista (FormPacientes)
+        public List<Paciente> ObtenerTodos()
+        {
+            var lista = new List<Paciente>();
             using (var cn = ConexionDB.GetConexion())
             {
                 cn.Open();
-                MySqlCommand cmd = new MySqlCommand("SELECT id, nombre, apellido FROM paciente", cn);
-                MySqlDataReader dr = cmd.ExecuteReader();
-
+                var cmd = new MySqlCommand("SELECT id, nombre, apellido FROM paciente", cn);
+                var dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
-                    Paciente p = new Paciente();
-                    p.Id = Convert.ToInt32(dr["id"]);
-                    p.Nombre = dr["nombre"].ToString();
-                    p.Apellido = dr["apellido"].ToString();
+                    var p = new Paciente
+                    {
+                        Id = (int)dr["id"],
+                        Nombre = dr["nombre"].ToString(),
+                        Apellido = dr["apellido"].ToString(),
+                        NombreCompleto = dr["nombre"] + " " + dr["apellido"]
+                    };
                     lista.Add(p);
                 }
             }
             return lista;
+        }
+
+        // Para eliminar (FormPacientes)
+        public void Eliminar(int id)
+        {
+            using (var cn = ConexionDB.GetConexion())
+            {
+                cn.Open();
+                var cmd = new MySqlCommand("DELETE FROM paciente WHERE id = " + id, cn);
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace TurneraMedica.Modelo
     {
         
         public int UsuarioId { get; set; }
-        
+        public string NombreCompleto { get; set; }
         public string Nombre { get; set; }
         public string Apellido { get; set; }
         public string Especialidad { get; set; }

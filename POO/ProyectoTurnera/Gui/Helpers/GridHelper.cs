@@ -222,24 +222,8 @@ namespace ProyectoTurnera.Gui.Helpers
                         return;
                     }
 
-                    // 5) Confirmación
-                    DialogResult resultado = MessageBox.Show(
-                        $"¿Eliminar este registro?\n\n{entidad}",
-                        "Confirmar eliminación",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
-
-                    if (resultado != DialogResult.Yes)
-                    {
-                        e.Cancel = true;
-                        return;
-                    }
-
-                    // 6) Ejecutar la eliminación (usando el Controller que pasaste)
                     accionEliminar(id);
 
-                    MessageBox.Show("Registro eliminado correctamente.", "Éxito",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -524,6 +508,188 @@ namespace ProyectoTurnera.Gui.Helpers
             });
 
         }
+
+        public static void ConfigurarColumnasTurnos(DataGridView gv)
+        {
+            gv.AutoGenerateColumns = false;
+            gv.Columns.Clear();
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Id",
+                HeaderText = "Id",
+                DataPropertyName = "Id",
+                Width = 60
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Fecha",
+                HeaderText = "Fecha",
+                DataPropertyName = "Fecha",
+                Width = 150
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Medico",
+                HeaderText = "Medico",
+                DataPropertyName = "Medico",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Especialidad",
+                HeaderText = "Especialidad",
+                DataPropertyName = "Especialidad",
+                Width = 100
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Consultorio",
+                HeaderText = "COnsultorio",
+                DataPropertyName = "Consultorio",
+                Width = 100
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Matricula",
+                HeaderText = "Metricula",
+                DataPropertyName = "Matricula",
+                Width = 100
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "PrestadorMedico",
+                HeaderText = "PrestadorMedico",
+                DataPropertyName = "PrestadorMedico",
+                Width = 100
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "PrecioConsulta",
+                HeaderText = "PrecioConsulta",
+                DataPropertyName = "PrecioConsulta",
+                Width = 100
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Paciente",
+                HeaderText = "Paciente",
+                DataPropertyName = "Paciente",
+                Width = 100
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "PrestadorPaciente",
+                HeaderText = "PrestadorPaciente",
+                DataPropertyName = "PrestadorPciente",
+                Width = 100
+            });
+
+            gv.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Estado",
+                HeaderText = "Estado",
+                DataPropertyName = "Estado",
+                Width = 100
+            });
+
+        }
+
+        public static void AttachCrudHandlers(DataGridView dgv, string tableName, Action reloadAction)
+        {
+            if (dgv == null)
+                return;
+
+            // Mask display and editing for Password column:
+            dgv.CellFormatting += (s, e) =>
+            {
+                try
+                {
+                    var grid = (DataGridView)s;
+                    if (e.RowIndex < 0 || e.ColumnIndex < 0)
+                        return;
+
+                    var col = grid.Columns[e.ColumnIndex];
+                    var colNameFmt = string.IsNullOrWhiteSpace(col.DataPropertyName) ? col.Name : col.DataPropertyName;
+                    if (!string.Equals(colNameFmt, "Password", StringComparison.OrdinalIgnoreCase))
+                        return;
+
+                    // Avoid masking while editing
+                    var cell = grid.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                    if (cell.IsInEditMode)
+                        return;
+
+                    var real = cell.Value?.ToString() ?? "";
+                    // show a fixed minimal mask length to avoid leaking length, or match length if acceptable
+                    var mask = new string('•', Math.Max(4, real.Length));
+                    e.Value = mask;
+                    e.FormattingApplied = true;
+                }
+                catch
+                {
+                    // swallow formatting errors to avoid interfering with grid rendering
+                }
+            };
+
+            dgv.EditingControlShowing += (s, e) =>
+            {
+                try
+                {
+                    var grid = (DataGridView)s;
+                    int colIndex = grid.CurrentCell?.ColumnIndex ?? -1;
+                    if (colIndex < 0)
+                        return;
+
+                    var col = grid.Columns[colIndex];
+                    var colNameEdit = string.IsNullOrWhiteSpace(col.DataPropertyName) ? col.Name : col.DataPropertyName;
+
+                    var tb = e.Control as TextBox;
+                    if (tb != null)
+                    {
+                        // password masking (existing behavior)
+                        tb.UseSystemPasswordChar = string.Equals(colNameEdit, "Password", StringComparison.OrdinalIgnoreCase);
+
+                        // Detach previous numeric handler to avoid duplicates
+                        tb.KeyPress -= NumericKeyPress;
+
+                        // Attach numeric-only handler for DNI, Matricula and NumeroConsultorio
+
+                        /*
+                        if (string.Equals(colNameEdit, "DNI", StringComparison.OrdinalIgnoreCase) ||
+                           str ing.Equals(colNameEdit, "Matricula", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(colNameEdit, "NumeroConsultorio", StringComparison.OrdinalIgnoreCase))
+                        { 
+                            tb.KeyPress += NumericKeyPress;
+                        }*/
+                    }
+                }
+                catch
+                {
+                    // ignore editing-control errors
+                }
+
+                // Local helper for numeric-only input
+                void NumericKeyPress(object sender, KeyPressEventArgs ke)
+                {
+                    // Allow control keys (backspace, arrows) and digits only
+                    if (!char.IsControl(ke.KeyChar) && !char.IsDigit(ke.KeyChar))
+                    {
+                        ke.Handled = true;
+                    }
+                }
+            };
+
+        }
+
         public static void HabilitarComboConActualizacion<T>(
             DataGridView dgv,
             string nombreColumna,

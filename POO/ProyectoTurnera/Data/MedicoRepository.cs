@@ -50,7 +50,7 @@ namespace ProyectoTurnera.Data
         public static Medico GetById(int id)
         {
             const string sql = @"
-                SELECT  Id, Nombre, Apellido, Dni, Password,´Matricula, PrecioConsulta, Especialidad, Prestador
+                SELECT  Id, Nombre, Apellido, Dni, Password, Matricula, PrecioConsulta, Especialidad, Prestador
                 FROM medicos
                 WHERE Id = @Id";
 

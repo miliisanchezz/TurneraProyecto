@@ -47,9 +47,7 @@ namespace ProyectoTurnera.Data
         public static Paciente GetById(int id)
         {
             const string sql = @"
-                SELECT  Id, Nombre, Apellido, Dni, Password,,Telefono, Prestador
-                FROM pacientes
-                WHERE Id = @Id";
+                SELECT Id, Nombre, Apellido, Dni, Password, Telefono, Prestador FROM pacientes WHERE Id = @Id";
 
             var param = new MySqlParameter("@Id", MySqlDbType.Int32) { Value = id };
             var dt = Database.Consultar(sql, param);

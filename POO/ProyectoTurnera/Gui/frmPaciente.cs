@@ -1,3 +1,4 @@
+using Org.BouncyCastle.Crypto;
 using ProyectoTurnera.Controller;
 using ProyectoTurnera.Gui.Helpers;
 using ProyectoTurnera.Model;
@@ -21,6 +22,7 @@ namespace ProyectoTurnera.Gui
         private readonly PrestadorController _prestadorController = new PrestadorController();
         private readonly EspecialidadController _especialidadController = new EspecialidadController();
         private readonly ConsultorioController _consultorioController = new ConsultorioController();
+        private readonly TurnoController _turnoController = new TurnoController();
 
         // UI
         private TabControl tabControl;
@@ -132,54 +134,23 @@ namespace ProyectoTurnera.Gui
         }
 
         private void LoadPendientes()
-        { /*
-            try
-            {
-                if (paciente.Id <= 0)
-                {
-                    dgvPendientes.DataSource = null;
-                    return;
-                }
+        {
 
-                // Start = tomorrow 00:00:00 (you requested >= tomorrow)
-                var start = DateTime.Today.AddDays(1);
+            var first = DateTime.Today.AddDays(1);
 
-                string sql = @"
-                    SELECT
-                        turnos.Id,
-                        turnos.Fecha,
-                        CONCAT(medicos.Apellido, ', ', medicos.Nombre) AS MedicoNombre,
-                        especialidades.Nombre AS Especialidad,
-                        CONCAT(consultorios.Nombre, ' ', consultorios.Direccion, ' ', consultorios.NumeroConsultorio) AS Consultorio,
-                        turnos.PrecioConsulta,
-                        CASE WHEN turnos.PrestadorMedico IS NOT NULL
-                                  AND turnos.PrestadorPaciente IS NOT NULL
-                                  AND turnos.PrestadorMedico = turnos.PrestadorPaciente
-                           THEN ROUND(turnos.PrecioConsulta * 0.5, 2)
-                           ELSE 0 END AS Bonificacion
-                    FROM turnos
-                    JOIN medicos ON medicos.Id = turnos.Medico
-                    JOIN especialidades ON especialidades.Id = turnos.Especialidad
-                    JOIN consultorios ON consultorios.Id = turnos.Consultorio
-                    WHERE turnos.Paciente = @pacienteId
-                      AND turnos.Fecha >= @start
-                    ORDER BY turnos.Fecha;";
+            BindingList<Turno> pendientes = new BindingList<Turno>(_turnoController.ObtenerFiltrando(first, null, this.paciente)); 
 
-                using (var conn = new MySql.Data.MySqlClient.MySqlConnection(BD.cadena))
-                using (var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn))
-                using (var da = new MySql.Data.MySqlClient.MySqlDataAdapter(cmd))
-                {
-                    cmd.Parameters.AddWithValue("@pacienteId", paciente.Id);
-                    cmd.Parameters.AddWithValue("@start", start);
-                    var dt = new DataTable();
-                    da.Fill(dt);
-                    dgvPendientes.DataSource = dt;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar pendientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } */
+            dgvPendientes.DataSource = pendientes;
+
+            GridHelper.AttachCrudHandlers(dgvPendientes, "pendientes", LoadPendientes);
+
+            GridHelper.ConfigurarColumnasTurnos(dgvPendientes);
+            GridHelper.ConfigureIdColumn(dgvPendientes, visible: true, allowEdit: false);
+            GridHelper.HabilitarEliminacionConConfirmacion(dgvPendientes,
+                pendientes,
+                id => _turnoController.Cancelar(id));
+
+
         }
 
         private void LoadEspecialidades()

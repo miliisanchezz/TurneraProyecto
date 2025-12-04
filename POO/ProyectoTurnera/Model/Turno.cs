@@ -19,14 +19,14 @@ namespace ProyectoTurnera.Model
 
         public Paciente Paciente { get; set; }
 
-        public Prestador MrestadoPacienteo { get; set; }
+        public Prestador PrestadorPaciente { get; set; }
 
-        public int Estado { get; set; } // 0: Pendiente, 1: Confirmado, 2: Cancelado    
+        public int? Estado { get; set; } // 0: Pendiente, 1: Confirmado, 2: Cancelado    
 
         public Turno() { } // Para binding
 
         public Turno(int id, DateTime fecha, Medico medico, Consultorio consultorio, Especialidad especialidad, Prestador prestadormedico,
-            double precioconsulta, Paciente paciente, Prestador prestadorpaciente, int estado)
+            double precioconsulta, Paciente paciente = null, Prestador prestadorpaciente = null, int? estado = null)
         {
             Id = id;
             Fecha = fecha;
@@ -36,7 +36,7 @@ namespace ProyectoTurnera.Model
             PrestadorMedico = prestadormedico;
             PrecioConsulta = precioconsulta;
             Paciente = paciente;
-            MrestadoPacienteo = prestadorpaciente;
+            PrestadorPaciente = prestadorpaciente;
             Estado = estado;
 
         }

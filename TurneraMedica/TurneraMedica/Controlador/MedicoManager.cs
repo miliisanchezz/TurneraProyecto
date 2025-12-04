@@ -9,20 +9,21 @@ namespace TurneraMedica.Controlador
     {
         public static List<Medico> GetMedicos()
         {
-            List<Medico> lista = new List<Medico>();
-
+            var lista = new List<Medico>();
             using (var cn = ConexionDB.GetConexion())
             {
                 cn.Open();
-                MySqlCommand cmd = new MySqlCommand("SELECT id, nombre, apellido FROM medico", cn);
-                MySqlDataReader dr = cmd.ExecuteReader();
-
+                var cmd = new MySqlCommand("SELECT id, nombre, apellido FROM medico", cn);
+                var dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
-                    Medico m = new Medico();
-                    m.Id = Convert.ToInt32(dr["id"]);
-                    m.Nombre = dr["nombre"].ToString();
-                    m.Apellido = dr["apellido"].ToString();
+                    var m = new Medico
+                    {
+                        Id = (int)dr["id"],
+                        Nombre = dr["nombre"].ToString(),
+                        Apellido = dr["apellido"].ToString(),
+                        NombreCompleto = dr["nombre"] + " " + dr["apellido"]
+                    };
                     lista.Add(m);
                 }
             }

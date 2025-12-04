@@ -22,6 +22,7 @@ namespace ProyectoTurnera.Gui
         private readonly PrestadorController _prestadorController = new PrestadorController();
         private readonly EspecialidadController _especialidadController = new EspecialidadController();
         private readonly ConsultorioController _consultorioController = new ConsultorioController();
+        private readonly TurnoController _turnoController = new TurnoController();
 
         private TabControl tabControl1;
         private TabPage tabPrestadores;
@@ -39,7 +40,6 @@ namespace ProyectoTurnera.Gui
         private DataGridView dgvEspecialidades;
         private DataGridView dgvConsultorios;
         private DataGridView dgvAdministradores;
-        // private DataGridView dgvTurno;
         private DataGridView dgvReportes;
 
         private DataGridView dgvTurnos;
@@ -147,12 +147,12 @@ namespace ProyectoTurnera.Gui
             Controls.Add(tabControl1);
 
             // Conectar handlers CRUD a las grillas que usan tablas
-            AttachCrudHandlers(dgvPrestadores, "prestadores", LoadPrestadores);
-            AttachCrudHandlers(dgvEspecialidades, "especialidades", LoadEspecialidades);
-            AttachCrudHandlers(dgvConsultorios, "consultorios", LoadConsultorios);
-            AttachCrudHandlers(dgvAdministradores, "administradores", LoadAdministradores);
-            AttachCrudHandlers(dgvPacientes, "pacientes", LoadPacientes);
-            AttachCrudHandlers(dgvMedicos, "medicos", LoadMedicos);
+            GridHelper.AttachCrudHandlers(dgvPrestadores, "prestadores", LoadPrestadores);
+            GridHelper.AttachCrudHandlers(dgvEspecialidades, "especialidades", LoadEspecialidades);
+            GridHelper.AttachCrudHandlers(dgvConsultorios, "consultorios", LoadConsultorios);
+            GridHelper.AttachCrudHandlers(dgvAdministradores, "administradores", LoadAdministradores);
+            GridHelper.AttachCrudHandlers(dgvPacientes, "pacientes", LoadPacientes);
+            GridHelper.AttachCrudHandlers(dgvMedicos, "medicos", LoadMedicos);
             
             SetupTurnosTab();
 
@@ -180,92 +180,6 @@ namespace ProyectoTurnera.Gui
                 AutoGenerateColumns = true
             };
             return dgv;
-        }
-
-        private void AttachCrudHandlers(DataGridView dgv, string tableName, Action reloadAction)
-        {
-            if (dgv == null)
-                return;
-
-            // Mask display and editing for Password column:
-            dgv.CellFormatting += (s, e) =>
-            {
-                try
-                {
-                    var grid = (DataGridView)s;
-                    if (e.RowIndex < 0 || e.ColumnIndex < 0)
-                        return;
-
-                    var col = grid.Columns[e.ColumnIndex];
-                    var colNameFmt = string.IsNullOrWhiteSpace(col.DataPropertyName) ? col.Name : col.DataPropertyName;
-                    if (!string.Equals(colNameFmt, "Password", StringComparison.OrdinalIgnoreCase))
-                        return;
-
-                    // Avoid masking while editing
-                    var cell = grid.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                    if (cell.IsInEditMode)
-                        return;
-
-                    var real = cell.Value?.ToString() ?? "";
-                    // show a fixed minimal mask length to avoid leaking length, or match length if acceptable
-                    var mask = new string('•', Math.Max(4, real.Length));
-                    e.Value = mask;
-                    e.FormattingApplied = true;
-                }
-                catch
-                {
-                    // swallow formatting errors to avoid interfering with grid rendering
-                }
-            };
-
-            dgv.EditingControlShowing += (s, e) =>
-            {
-                try
-                {
-                    var grid = (DataGridView)s;
-                    int colIndex = grid.CurrentCell?.ColumnIndex ?? -1;
-                    if (colIndex < 0)
-                        return;
-
-                    var col = grid.Columns[colIndex];
-                    var colNameEdit = string.IsNullOrWhiteSpace(col.DataPropertyName) ? col.Name : col.DataPropertyName;
-
-                    var tb = e.Control as TextBox;
-                    if (tb != null)
-                    {
-                        // password masking (existing behavior)
-                        tb.UseSystemPasswordChar = string.Equals(colNameEdit, "Password", StringComparison.OrdinalIgnoreCase);
-
-                        // Detach previous numeric handler to avoid duplicates
-                        tb.KeyPress -= NumericKeyPress;
-
-                        // Attach numeric-only handler for DNI, Matricula and NumeroConsultorio
-
-                        /*
-                        if (string.Equals(colNameEdit, "DNI", StringComparison.OrdinalIgnoreCase) ||
-                           str ing.Equals(colNameEdit, "Matricula", StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(colNameEdit, "NumeroConsultorio", StringComparison.OrdinalIgnoreCase))
-                        { 
-                            tb.KeyPress += NumericKeyPress;
-                        }*/
-                    }
-                }
-                catch
-                {
-                    // ignore editing-control errors
-                }
-
-                // Local helper for numeric-only input
-                void NumericKeyPress(object sender, KeyPressEventArgs ke)
-                {
-                    // Allow control keys (backspace, arrows) and digits only
-                    if (!char.IsControl(ke.KeyChar) && !char.IsDigit(ke.KeyChar))
-                    {
-                        ke.Handled = true;
-                    }
-                }
-            };
-
         }
         
         private void LoadPrestadores()
@@ -368,10 +282,8 @@ namespace ProyectoTurnera.Gui
 
             var medicos = new BindingList<Medico>(_medicoController.ObtenerTodos());
 
-            // 1. Configurar columnas (aún sin Prestador como combo)
             GridHelper.ConfigurarColumnasMedicos(dgvMedicos);
 
-            // 2. CONVERTIR a ComboBox ANTES del DataSource !!!
             GridHelper.HabilitarComboConActualizacion(
                 dgvMedicos,
                 "Prestador",
@@ -384,10 +296,8 @@ namespace ProyectoTurnera.Gui
                 especialidades.Cast<object>().ToList()
             );
 
-            // 3. AHORA sí asignar DataSource (aquí se crean las celdas correctas)
             dgvMedicos.DataSource = medicos;
 
-            // 4. Resto de configuraciones
             GridHelper.ConfigureIdColumn(dgvMedicos, visible: true, allowEdit: false);
             GridHelper.HabilitarEdicionInline(dgvMedicos, medicos, _medicoController, "Nombre", "Apellido");
             GridHelper.HabilitarEliminacionConConfirmacion(dgvMedicos, medicos, id => _medicoController.Eliminar(id));
@@ -469,87 +379,20 @@ namespace ProyectoTurnera.Gui
             dgvTurnos = CreateDefaultGrid("dgvTurnos");
             dgvTurnos.ReadOnly = true;
             dgvTurnos.AllowUserToAddRows = false;
-            dgvTurnos.AllowUserToDeleteRows = false;
+            dgvTurnos.AllowUserToDeleteRows = true;
             dgvTurnos.AutoGenerateColumns = true;
             dgvTurnos.Dock = DockStyle.Fill;
+
             pnlTurnosBottom.Controls.Add(dgvTurnos);
 
-            dgvTurnos.KeyDown += DgvTurnos_KeyDown;
-
-            // Put panels into the tabTurnos page
             tabTurnos.Controls.Add(pnlTurnosBottom);
             tabTurnos.Controls.Add(pnlTurnosTop);
 
-            // Populate medicos and consultorios lists for the generator
             LoadMedicosForTurnos();
             LoadConsultoriosForTurnos();
 
-            // Load current month by default
             dtpMonthYear.Value = DateTime.Today;
             LoadTurnos();
-        }
-
-        private void DgvTurnos_KeyDown(object sender, KeyEventArgs e)
-        {
-            /*
-            if (e.KeyCode != Keys.Delete)
-                return;
-
-            var grid = (DataGridView)sender;
-            if (grid.SelectedRows == null || grid.SelectedRows.Count == 0)
-                return;
-
-            var rows = grid.SelectedRows.Cast<DataGridViewRow>().ToList();
-            var deletableIds = new List<int>();
-
-            // First pass: validate all selected rows and collect ids to delete
-            foreach (var r in rows)
-            {
-                if (r.Cells["Id"] == null || r.Cells["Id"].Value == null || r.Cells["Id"].Value == DBNull.Value)
-                    continue;
-
-                if (!int.TryParse(r.Cells["Id"].Value.ToString(), out int id))
-                    continue;
-
-                try
-                {
-                    DataTable dt = Database.Consultar($"SELECT Paciente FROM turnos WHERE Id = {id} LIMIT 1");
-                    // allow delete only if no Paciente assigned
-                    if (dt == null || dt.Rows.Count == 0 || dt.Rows[0]["Paciente"] == DBNull.Value || string.IsNullOrWhiteSpace(dt.Rows[0]["Paciente"]?.ToString()))
-                    {
-                        deletableIds.Add(id);
-                    }
-                }
-                catch
-                {
-                    // ignore this row on DB error (or optionally surface error per row)
-                }
-            }
-
-            if (deletableIds.Count == 0)
-            {
-                MessageBox.Show("No hay turnos seleccionados que puedan eliminarse (tienen pacientes asignados).", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            var confirm = MessageBox.Show($"Eliminar {deletableIds.Count} turno(s) seleccionados?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (confirm != DialogResult.Yes)
-                return;
-
-            foreach (var id in deletableIds)
-            {
-                try
-                {
-                    Database.Ejecutar($"DELETE FROM turnos WHERE Id = {id}");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error al eliminar turno {id}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-
-            // Refresh grid after deletes
-            LoadTurnos();*/
         }
 
         private void LoadMedicosForTurnos()
@@ -573,65 +416,32 @@ namespace ProyectoTurnera.Gui
         }
 
         private void LoadTurnos()
-        {  /*
-            try
-            {
-                var first = new DateTime(dtpMonthYear.Value.Year, dtpMonthYear.Value.Month, 1);
-                var last = first.AddMonths(1).AddDays(-1).Date.AddSeconds(86399); // end of last day
-                string sql = $"SELECT " +
-                    $"turnos.Id, " +
-                    $"turnos.Fecha, " +
-                    $"CONCAT(medicos.Apellido, ', ', medicos.Nombre) as MedicoNombre, " +
-                    $"especialidades.Nombre as MedicoEspecialidad, " +
-                    $"CONCAT(consultorios.Nombre, ' ', consultorios.Direccion, ' No. ', CAST(consultorios.NumeroConsultorio AS CHAR)) AS Consultorio, " +
-                    $"prestadores_medico.Nombre as PrestadorMedico, " +
-                    $"turnos.PrecioConsulta, " +
-                    $"CONCAT(pacientes.apellido, ', ', pacientes.nombre) as PacienteNombre, " +
-                    $"prestadores_paciente.nombre as PrestadorPaciente, " +
-                    $"CASE WHEN Estado = 1 THEN 'Presente' WHEN Estado = 2  THEN 'Ausente'  WHEN Paciente IS NOT NULL THEN 'En curso' WHEN Fecha < NOW() THEN '' ELSE 'Disponible'  END as Estado" +
-                    $" FROM turnos " +
-                    $" JOIN medicos ON medicos.Id = turnos.Medico " +
-                    $" JOIN especialidades ON especialidades.Id = turnos.Especialidad " +
-                    $" JOIN consultorios ON consultorios.Id = turnos.Consultorio " +
-                    $" JOIN prestadores as prestadores_medico ON prestadores_medico.Id = turnos.PrestadorMedico " +
-                    $" LEFT JOIN pacientes ON pacientes.Id = turnos.Paciente " +
-                    $" LEFT JOIN prestadores as prestadores_paciente ON prestadores_paciente.Id = turnos.PrestadorPaciente " + 
-                    $"WHERE turnos.Fecha >= '{first:yyyy-MM-dd 00:00:00}' AND turnos.Fecha <= '{last:yyyy-MM-dd HH:mm:ss}' ORDER BY fecha";
-                DataTable dt = Database.Consultar(sql);
-                dgvTurnos.DataSource = dt;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }*/
+        {
+
+            var first = new DateTime(dtpMonthYear.Value.Year, dtpMonthYear.Value.Month, 1);
+            var last = first.AddMonths(1).AddDays(-1).Date.AddSeconds(86399); // end of last day
+
+            BindingList<Turno> turnos = new BindingList<Turno>(_turnoController.ObtenerFiltrando(first, last));
+            dgvTurnos.DataSource = turnos;
+
+            GridHelper.AttachCrudHandlers(dgvMedicos, "turnos", LoadTurnos);
+
+            GridHelper.ConfigurarColumnasTurnos(dgvTurnos);
+            GridHelper.ConfigureIdColumn(dgvTurnos, visible: true, allowEdit: false);
+            GridHelper.HabilitarEliminacionConConfirmacion(dgvTurnos,
+                turnos,
+                id => _turnoController.Eliminar(id));
+
         }
 
         private void GenerateTurnos()
         {
-            /*
+            
             try
             {
-                if (cbMedicoTurnos.SelectedValue == null || cbConsultorioTurnos.SelectedValue == null)
-                {
-                    MessageBox.Show("Seleccione médico y consultorio.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
 
                 int medicoId = Convert.ToInt32(cbMedicoTurnos.SelectedValue);
                 int consultorioId = Convert.ToInt32(cbConsultorioTurnos.SelectedValue);
-
-                // Get medico data (Especialidad, PrecioConsulta)
-                DataTable dtMed = Database.Consultar($"SELECT Especialidad, PrecioConsulta, Prestador FROM medicos WHERE Id = {medicoId} LIMIT 1");
-                string especialidad = "";
-                decimal precio = 0m;
-                string prestador_medico = "";
-
-                if (dtMed != null && dtMed.Rows.Count > 0)
-                {
-                    especialidad = dtMed.Rows[0]["Especialidad"]?.ToString() ?? "";
-                    decimal.TryParse(dtMed.Rows[0]["PrecioConsulta"]?.ToString(), out precio);
-                    prestador_medico = dtMed.Rows[0]["Prestador"]?.ToString() ?? "";
-                }
 
                 var first = new DateTime(dtpMonthYear.Value.Year, dtpMonthYear.Value.Month, 1);
                 var last = first.AddMonths(1).AddDays(-1);
@@ -657,7 +467,10 @@ namespace ProyectoTurnera.Gui
                     return;
                 }
 
-                var inserts = new List<string>();
+                Medico medico = _medicoController.ObtenerPorId(medicoId);
+                Consultorio consultorio = _consultorioController.ObtenerPorId(consultorioId);
+
+
                 for (var date = first.Date; date <= last.Date; date = date.AddDays(1))
                 {
                     if (!daysSelected.Contains(date.DayOfWeek))
@@ -667,26 +480,22 @@ namespace ProyectoTurnera.Gui
                     {
                         var fecha = date.Date + ts;
                         // Build INSERT: fecha, Medico, Especialidad, Consultorio, PrecioConsulta
-                        var fechaSql = fecha.ToString("yyyy-MM-dd HH:mm:ss");
-                        var especialEsc = EscapeSql(especialidad);
-                        var sql = $"INSERT IGNORE INTO turnos (fecha, Medico, Especialidad, Consultorio, PrecioConsulta, PrestadorMedico) VALUES ('{fechaSql}', {medicoId}, '{especialEsc}', {consultorioId}, {precio.ToString(System.Globalization.CultureInfo.InvariantCulture)}, {prestador_medico})";
-                        inserts.Add(sql);
+
+                        Turno turno = new Turno
+                        {
+                            Fecha = fecha,
+                            Medico = medico,
+                            Consultorio = consultorio,
+                            Especialidad = medico.Especialidad,
+                            PrestadorMedico = medico.Prestador,
+                            PrecioConsulta = medico.PrecioConsulta
+                        };
+
+                        _turnoController.Crear(turno);
+
                     }
-                }
 
-                if (inserts.Count == 0)
-                {
-                    MessageBox.Show("No se generaron turnos con los parámetros indicados.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
                 }
-
-                // Execute inserts inside a simple loop (could be optimized into batch if needed)
-                foreach (var ins in inserts)
-                {
-                    Database.Ejecutar(ins);
-                }
-
-                MessageBox.Show($"Generados {inserts.Count} turnos.", "Ok", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Reload grid
                 LoadTurnos();
@@ -694,7 +503,7 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al generar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }*/
+            }
         }
 
         private void SetupReportTab()
