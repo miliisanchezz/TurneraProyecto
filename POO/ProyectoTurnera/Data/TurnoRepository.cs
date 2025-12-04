@@ -25,18 +25,28 @@ namespace ProyectoTurnera.Data
 
         public static List<Turno> GetAll()
         {
-            return new List<Turno>();
-           /* const string sql = @"
-                SELECT Id, Nombre, Apellido, Dni, Password 
-                FROM administradores";
 
-            var dt = Database.Consultar(sql);
-            var lista = new List<Administrador>();
+            const string sql = @"
+             SELECT 
+                 Id,
+                 Fecha,
+                 MedicoId,
+                 ConsultorioId,
+                 EspecialidadId,
+                 PrestadorMedicoId,
+                 PrecioConsulta AS PrecioConsulta,
+                 PacienteId,
+                 PrestadorEstadoPacienteId AS MrestadoPacienteoId,  -- ajusta el nombre real de la columna
+                 Estado
+             FROM turnos";
 
-            foreach (DataRow row in dt.Rows)
-                lista.Add(MapRow(row));
+             var dt = Database.Consultar(sql);
+             var lista = new List<Turno>();
 
-            return lista;*/
+             foreach (DataRow row in dt.Rows)
+                 lista.Add(MapRow(row));
+
+             return lista;
         }
 
         public static int Insert(Turno turno)
@@ -96,15 +106,19 @@ namespace ProyectoTurnera.Data
         private static Turno MapRow(DataRow row)
         {
 
-            return new Turno();
-            /*
+            return new Turno()
             {
-                Id = Convert.ToInt32(row["Id"]),
-                Nombre = row["Nombre"].ToString().Trim(),
-                Apellido = row["Apellido"].ToString().Trim(),
-                Dni = Convert.ToInt32(row["Dni"]),
-                Password = row["Password"].ToString().Trim()
-            }; */
+                Fecha = Convert.ToDateTime(row["Fecha"]),
+                Medico = MedicoRepository.GetById(Convert.ToInt32(row["Medico"])),
+                Consultorio = ConsultorioRepository.GetById(Convert.ToInt32(row["Consultorio"])),
+                Especialidad = EspecialidadRepository.GetById(Convert.ToInt32(row["Especialidad"])),
+                PrestadorMedico = PrestadorRepository.GetById(Convert.ToInt32(row["PrestadorMedico"])),
+                PrecioConsulta = Convert.ToDouble(row["PrecioConsulta"]),
+                Paciente = row["Paciente"] == null ? null : PacienteRepository.GetValueOrDefault((int)row["Paciente"]),
+                PrestadorPaciente = row["PrestadorPaciente"] == null ? null : PrestadorRepository.GetValueOrDefault((int)row["PrestadorPaciente"]),
+                Estado
+
+            }; 
 
         }
 

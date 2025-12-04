@@ -92,7 +92,8 @@ namespace ProyectoTurnera.Data
         public static void Update(Administrador administrador)
         {
             const string sql = @"
-                UPDATE administradores 
+                UPDATE administrado
+res 
                 SET Nombre = @Nombre, 
                     Apellido = @Apellido, 
                     DNI = @DNI,

@@ -11,11 +11,11 @@ namespace ProyectoTurnera.Model
 
         public Consultorio Consultorio { get; set; }
 
-        public Especialidad Epecialidad { get; set; }
+        public Especialidad Especialidad { get; set; }
 
         public Prestador PrestadorMedico { get; set; }
 
-        public double PrecioCoosulta { get; set; }
+        public double PrecioConsulta { get; set; }
 
         public Paciente Paciente { get; set; }
 
@@ -32,9 +32,9 @@ namespace ProyectoTurnera.Model
             Fecha = fecha;
             Medico = medico;
             Consultorio = consultorio;
-            Epecialidad = especialidad;
+            Especialidad = especialidad;
             PrestadorMedico = prestadormedico;
-            PrecioCoosulta = precioconsulta;
+            PrecioConsulta = precioconsulta;
             Paciente = paciente;
             MrestadoPacienteo = prestadorpaciente;
             Estado = estado;
