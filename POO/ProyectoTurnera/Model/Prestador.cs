@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public string Nombre { get; set; }
 
-        public Prestador() { } // Necesario para binding
+        public Prestador() { } // binding
 
         public Prestador(int id, string nombre)
         {

@@ -23,7 +23,7 @@ namespace ProyectoTurnera.Model
 
         public int? Estado { get; set; } // 0: Pendiente, 1: Confirmado, 2: Cancelado    
 
-        public Turno() { } // Para binding
+        public Turno() { } // binding
 
         public Turno(int id, DateTime fecha, Medico medico, Consultorio consultorio, Especialidad especialidad, Prestador prestadormedico,
             double precioconsulta, Paciente paciente = null, Prestador prestadorpaciente = null, int? estado = null)

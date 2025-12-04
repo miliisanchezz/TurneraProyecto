@@ -6,12 +6,11 @@ namespace ProyectoTurnera.Data
 {
     public static class Database
     {
-        // Ocultamos la cadena en appsettings.json o variables de entorno (recomendado)
-        // Pero por ahora la dejamos aquí (mejor que hardcodeada en cada clase)
+        
         private static readonly string ConnectionString =
             "server=localhost; database=turnera; uid=usuario; pwd=clave; CharSet=utf8mb4;";
 
-        // Método genérico y seguro para consultas con parámetros
+        
         public static DataTable Consultar(string sql, params MySqlParameter[] parametros)
         {
             var dt = new DataTable();
@@ -39,7 +38,7 @@ namespace ProyectoTurnera.Data
             return dt;
         }
 
-        // Para INSERT, UPDATE, DELETE
+        // IUD
         public static void Ejecutar(string sql, params MySqlParameter[] parametros)
         {
             using (var con = new MySqlConnection(ConnectionString))
@@ -60,7 +59,7 @@ namespace ProyectoTurnera.Data
             }
         }
 
-        // Para INSERT que devuelven el ID generado
+        
         public static int EjecutarEscalar(string sql, params MySqlParameter[] parametros)
         {
             using (var con = new MySqlConnection(ConnectionString))
@@ -69,7 +68,7 @@ namespace ProyectoTurnera.Data
                 if (parametros != null && parametros.Length > 0)
                     cmd.Parameters.AddRange(parametros);
 
-                // Para MySQL: usar LAST_INSERT_ID()
+                
                 if (!sql.Trim().ToUpper().Contains("SELECT LAST_INSERT_ID()"))
                     sql += "; SELECT LAST_INSERT_ID();";
 
@@ -88,7 +87,7 @@ namespace ProyectoTurnera.Data
             }
         }
 
-        // Versión sobrecargada sin parámetros (para consultas simples sin riesgo)
+        // solo para consultas simples sin riesgp
         public static DataTable Consultar(string sql) => Consultar(sql, null);
         public static void Ejecutar(string sql) => Ejecutar(sql, null);
     }

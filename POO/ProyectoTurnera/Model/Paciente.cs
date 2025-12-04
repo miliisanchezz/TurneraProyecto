@@ -11,7 +11,7 @@ namespace ProyectoTurnera.Model
         public Prestador Prestador { get; set; }
         public string Telefono { get; set; }
 
-        // Esta propiedad es SOLO para el binding en la grilla
+        // solp para el binding en la grilla
         [DisplayName("Prestador")]
         public string PrestadorNombre => Prestador?.Nombre ?? "";
         [Browsable(false)]
@@ -22,7 +22,7 @@ namespace ProyectoTurnera.Model
         }
         public static List<Prestador> PrestadoresDisponibles { get; set; } = new List<Prestador>();
 
-        public Paciente() : base() { } // Necesario para binding
+        public Paciente() : base() { } // binding
 
         public Paciente(int id, string nombre, string apellido, int dni, string password,
                         Prestador prestador, string telefono)

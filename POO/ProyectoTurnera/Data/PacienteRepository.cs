@@ -129,10 +129,12 @@ namespace ProyectoTurnera.Data
             Database.Ejecutar(sql, param);
         }
 
+        //cf
         private static Paciente MapRow(DataRow row)
         {
             return new Paciente
             {
+                //agd
                 Id = Convert.ToInt32(row["Id"]),
                 Nombre = row["Nombre"].ToString(),
                 Apellido = row["Apellido"].ToString(),

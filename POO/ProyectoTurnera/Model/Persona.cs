@@ -8,7 +8,7 @@
         public int Dni { get; set; }
         public string Password { get; set; }
  
-        public Persona() { } // Necesario para binding
+        public Persona() { } // binding
         protected Persona(int id, string nombre, string apellido, int dni, string password)
         {
             Id = id;
@@ -18,7 +18,7 @@
             Password = password;
         }
 
-        public override string ToString() => $"{Nombre} / {Apellido}";
+        public override string ToString() => Nombre + "/" + Apellido;
 
 
     }

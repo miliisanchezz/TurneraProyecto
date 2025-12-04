@@ -16,7 +16,7 @@
             Direccion = direccion;
             NumeroConsultorio = numeroConsultorio;
         }
-        public override string ToString() => $"{Nombre} / {Direccion} / {NumeroConsultorio}";
+        public override string ToString() => Nombre + "/" + Direccion + "/" + NumeroConsultorio;
 
     }
 }
