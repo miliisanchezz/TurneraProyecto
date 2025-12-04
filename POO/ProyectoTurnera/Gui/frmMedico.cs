@@ -83,7 +83,6 @@ namespace ProyectoTurnera.Gui
                 AutoGenerateColumns = true,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect
             };
-            dgvPendientes.KeyDown += DgvPendientes_KeyDown;
 
             pnlPendientesBottom = new Panel { Dock = DockStyle.Bottom, Height = 40, Padding = new Padding(6) };
             btnMarcarPresente = new Button { Text = "Marcar presente", Width = 140, Left = 8, Top = 6 };
@@ -151,7 +150,7 @@ namespace ProyectoTurnera.Gui
 
             var cut = DateTime.Today.AddDays(1);
 
-            BindingList<Turno> pendientes = new BindingList<Turno>(_turnoController.ObtenerFiltrando(null, cut, null, this.medico));
+            BindingList<Turno> pendientes = new BindingList<Turno>(_turnoController.ObtenerFiltrando(null, cut, null, this.medico, null, false));
 
             dgvPendientes.DataSource = pendientes;
 
@@ -327,7 +326,7 @@ namespace ProyectoTurnera.Gui
         }
 
         private void MarkPendientesEstado(int estado)
-        { /*
+        { 
             try
             {
                 var ids = new List<int>();
@@ -344,7 +343,7 @@ namespace ProyectoTurnera.Gui
 
                 foreach (var id in ids)
                 {
-                    BD.Ejecutar($"UPDATE turnos SET Estado = {estado} WHERE Id = {id}");
+                    _turnoController.MarcarEstado(id, estado);
                 }
 
                 LoadPendientes();
@@ -352,46 +351,8 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al asignar estado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } */
+            } 
         }
 
-        // Handle Delete key to cancel (clear paciente) on Pendientes tab
-        private void DgvPendientes_KeyDown(object sender, KeyEventArgs e)
-        { /*
-            if (e.KeyCode != Keys.Delete)
-                return;
-
-            if (dgvPendientes.CurrentRow == null)
-                return;
-
-            var rows = dgvPendientes.SelectedRows.Cast<DataGridViewRow>().ToList();
-            if (rows.Count == 0)
-                rows = new List<DataGridViewRow> { dgvPendientes.CurrentRow };
-
-            var count = rows.Count;
-            var confirm = MessageBox.Show($"Cancelar {count} turno(s) seleccionado(s)?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (confirm != DialogResult.Yes)
-                return;
-
-            try
-            {
-                foreach (var r in rows)
-                {
-                    if (r.Cells["Id"] == null || r.Cells["Id"].Value == null)
-                        continue;
-
-                    int id = Convert.ToInt32(r.Cells["Id"].Value);
-                    // cancel reservation: clear Paciente and PrestadorPaciente
-                    string sql = $"UPDATE turnos SET Paciente = NULL, PrestadorPaciente = NULL WHERE Id = {id}";
-                    BD.Ejecutar(sql);
-                }
-
-                LoadPendientes();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cancelar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } */
-        }
     }
 }

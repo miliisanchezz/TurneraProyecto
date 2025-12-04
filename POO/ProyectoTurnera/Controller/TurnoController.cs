@@ -43,6 +43,11 @@ namespace ProyectoTurnera.Controller
             TurnoRepository.Assign(id, paciente);
         }
 
+        public void MarcarEstado(int id, int estado)
+        {
+            TurnoRepository.SetStatus(id, estado);
+        }
+
 
     }
 

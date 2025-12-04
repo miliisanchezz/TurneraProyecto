@@ -80,6 +80,14 @@ namespace ProyectoTurnera.Data
                 sql += " AND turnos.Paciente IS NULL ";
             }
 
+            if (solodisponibles == false)
+            {
+                sql += " AND turnos.Paciente IS NOT NULL ";
+            }
+
+
+
+
 
             var dt = Database.Consultar(sql);
             var lista = new List<Turno>();
@@ -165,7 +173,18 @@ namespace ProyectoTurnera.Data
             Database.Ejecutar(sql, parametros);
         }
 
+        public static void SetStatus(int id, int estado)
+        {
+            const string sql = "UPDATE turnos set Estado = @Estado WHERE Id = @Id";
 
+            var parametros = new[]
+            {
+                new MySqlParameter("@Id", MySqlDbType.Int32) { Value = id },
+                new MySqlParameter("@Estado", MySqlDbType.Int32) { Value = estado },
+            };
+
+            Database.Ejecutar(sql, parametros);
+        }
 
         private static Turno MapRow(DataRow row)
         {
