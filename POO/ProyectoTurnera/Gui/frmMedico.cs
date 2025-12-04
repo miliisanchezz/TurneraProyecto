@@ -21,6 +21,7 @@ namespace ProyectoTurnera.Gui
         private readonly PrestadorController _prestadorController = new PrestadorController();
         private readonly EspecialidadController _especialidadController = new EspecialidadController();
         private readonly ConsultorioController _consultorioController = new ConsultorioController();
+        private readonly TurnoController _turnoController = new TurnoController();
 
         private TabControl tabControl;
         private TabPage tabPendientes;
@@ -95,7 +96,6 @@ namespace ProyectoTurnera.Gui
             tabPendientes.Controls.Add(dgvPendientes);
             tabPendientes.Controls.Add(pnlPendientesBottom);
 
-            // Gestionar (now "Turnos") — only a grid that lists all turnos for this Medico from today onwards
             dgvPorPaciente = new DataGridView
             {
                 Dock = DockStyle.Fill,
@@ -147,107 +147,35 @@ namespace ProyectoTurnera.Gui
         }
 
         private void LoadPendientes()
-        { /*
-            try
-            {
-                if (medico.Id <= 0)
-                {
-                    dgvPendientes.DataSource = null;
-                    return;
-                }
+        {
 
-                var start = DateTime.Today.AddDays(1);
+            var cut = DateTime.Today.AddDays(1);
 
-                string sql = @"
-                    SELECT
-                        turnos.Id,
-                        turnos.Fecha,
-                        CONCAT(pacientes.Apellido, ', ', pacientes.Nombre) AS PacienteNombre,
-                        especialidades.Nombre AS Especialidad,
-                        CONCAT(consultorios.Nombre, ' ', consultorios.Direccion, ' ', consultorios.NumeroConsultorio) AS Consultorio,
-                        turnos.PrecioConsulta,
-                        prestadores.nombre as Prestador,
-                        CASE WHEN turnos.PrestadorMedico IS NOT NULL
-                                  AND turnos.PrestadorPaciente IS NOT NULL
-                                  AND turnos.PrestadorMedico = turnos.PrestadorPaciente
-                           THEN ROUND(turnos.PrecioConsulta * 0.5, 2)
-                           ELSE 0 END AS Bonificacion
-                    FROM turnos
-                    LEFT JOIN pacientes ON pacientes.Id = turnos.Paciente
-                    LEFT JOIN prestadores ON prestadores.id = turnos.PrestadorPaciente
-                    JOIN especialidades ON especialidades.Id = turnos.Especialidad
-                    JOIN consultorios ON consultorios.Id = turnos.Consultorio
-                    WHERE turnos.Medico = @medicoId
-                        AND turnos.Fecha >= @start
-                        AND turnos.Paciente IS NOT NULL
-                        AND Estado IS NULL 
-                    ORDER BY turnos.Fecha;";
+            BindingList<Turno> pendientes = new BindingList<Turno>(_turnoController.ObtenerFiltrando(null, cut, null, this.medico));
 
-                using (var conn = new MySql.Data.MySqlClient.MySqlConnection(BD.cadena))
-                using (var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn))
-                using (var da = new MySql.Data.MySqlClient.MySqlDataAdapter(cmd))
-                {
-                    cmd.Parameters.AddWithValue("@medicoId", medico.Id);
-                    cmd.Parameters.AddWithValue("@start", start);
-                    var dt = new DataTable();
-                    da.Fill(dt);
-                    dgvPendientes.DataSource = dt;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar pendientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }  */
+            dgvPendientes.DataSource = pendientes;
+
+            GridHelper.AttachCrudHandlers(dgvPendientes, "pendientes", LoadPendientes);
+
+            GridHelper.ConfigurarColumnasTurnos(dgvPendientes);
+            GridHelper.ConfigureIdColumn(dgvPendientes, visible: true, allowEdit: false);
+
         }
 
         private void LoadTurnos()
-        { /*
-            try
-            {
-                if (medico.Id <= 0)
-                {
-                    dgvPorPaciente.DataSource = null;
-                    return;
-                }
+        {
 
-                var start = DateTime.Today; // today or later
+            var cut = DateTime.Today.AddDays(1);
 
-                string sql = @"
-                    SELECT
-                        turnos.Id,
-                        turnos.Fecha,
-                        CONCAT(pacientes.Apellido, ', ', pacientes.Nombre) AS PacienteNombre,
-                        especialidades.Nombre AS Especialidad,
-                        CONCAT(consultorios.Nombre, ' ', consultorios.Direccion, ' ', consultorios.NumeroConsultorio) AS Consultorio,
-                        turnos.PrecioConsulta,
-                        prestadores.nombre as Prestador,
-                        CASE WHEN  turnos.PrestadorMedico = turnos.PrestadorPaciente
-                           THEN ROUND(turnos.PrecioConsulta * 0.5, 2)
-                           ELSE 0 END AS Bonificacion
-                    FROM turnos
-                    LEFT JOIN pacientes ON pacientes.Id = turnos.Paciente
-                    LEFT JOIN prestadores ON prestadores.id = turnos.PrestadorPaciente
-                    JOIN especialidades ON especialidades.Id = turnos.Especialidad
-                    JOIN consultorios ON consultorios.Id = turnos.Consultorio
-                    WHERE turnos.Medico = @medicoId
-                      AND turnos.Fecha >= @start
-                    ORDER BY turnos.Fecha;";
+            BindingList<Turno> turnos = new BindingList<Turno>(_turnoController.ObtenerFiltrando(cut, null, null, this.medico));
 
-                using (var conn = new MySql.Data.MySqlClient.MySqlConnection(BD.cadena))
-                using (var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn))
-                using (var da = new MySql.Data.MySqlClient.MySqlDataAdapter(cmd))
-                {
-                    cmd.Parameters.AddWithValue("@medicoId", medico.Id);
-                    cmd.Parameters.AddWithValue("@start", start);
-                    var dt = new DataTable();
-                    da.Fill(dt);
-                    dgvPorPaciente.DataSource = dt;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } */
+            dgvPorPaciente.DataSource = turnos;
+
+            GridHelper.AttachCrudHandlers(dgvPorPaciente, "turnos", LoadTurnos);
+
+            GridHelper.ConfigurarColumnasTurnos(dgvPorPaciente);
+            GridHelper.ConfigureIdColumn(dgvPorPaciente, visible: true, allowEdit: false);
+
         }
 
         private DateTime ComputeWeekStart(DateTime date)

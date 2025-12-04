@@ -31,7 +31,7 @@ namespace ProyectoTurnera.Data
 
         }
 
-        public static List<Turno> GetByFilter(DateTime? fromdate = null, DateTime? todate=null, Paciente paciente=null, Medico medico = null )
+        public static List<Turno> GetByFilter(DateTime? fromdate = null, DateTime? todate=null, Paciente paciente=null, Medico medico = null, Especialidad especialidad = null, bool? solodisponibles = null)
         {
 
              string sql = @"
@@ -69,6 +69,17 @@ namespace ProyectoTurnera.Data
             {
                 sql += $" AND turnos.Medico = {medico.Id} ";
             }
+
+            if (especialidad != null) 
+            {
+                sql += $" AND turnos.Especialidad = {especialidad.Id} ";
+            }
+
+            if (solodisponibles == true)
+            {   
+                sql += " AND turnos.Paciente IS NULL ";
+            }
+
 
             var dt = Database.Consultar(sql);
             var lista = new List<Turno>();
@@ -139,6 +150,21 @@ namespace ProyectoTurnera.Data
             var param = new MySqlParameter("@Id", MySqlDbType.Int32) { Value = id };
             Database.Ejecutar(sql, param);
         }
+
+        public static void Assign(int id, Paciente paciente)
+        {
+            const string sql = "UPDATE turnos set Paciente = @Paciente, PrestadorPaciente = @PrestadorPaciente WHERE Id = @Id";
+
+            var parametros = new[]
+            {
+                new MySqlParameter("@Id", MySqlDbType.Int32) { Value = id },
+                new MySqlParameter("@Paciente", MySqlDbType.Int32) { Value = paciente.Id },
+                new MySqlParameter("@PrestadorPaciente", MySqlDbType.Int32) { Value = paciente.Prestador.Id }
+            };
+
+            Database.Ejecutar(sql, parametros);
+        }
+
 
 
         private static Turno MapRow(DataRow row)

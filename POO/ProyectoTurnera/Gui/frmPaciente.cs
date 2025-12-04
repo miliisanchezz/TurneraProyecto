@@ -67,11 +67,10 @@ namespace ProyectoTurnera.Gui
                 Dock = DockStyle.Fill,
                 ReadOnly = true,                      // no editing
                 AllowUserToAddRows = false,           // no inserts
-                AllowUserToDeleteRows = false,        // deletion handled via Delete key
+                AllowUserToDeleteRows = true,        // deletion handled via Delete key
                 AutoGenerateColumns = true,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect
             };
-            dgvPendientes.KeyDown += DgvPendientes_KeyDown;
 
             tabPendientes.Controls.Add(dgvPendientes);
 
@@ -80,26 +79,13 @@ namespace ProyectoTurnera.Gui
 
             var lblEsp = new Label { Text = "Especialidad:", Left = 8, Top = 12, AutoSize = true };
             cbEspecialidad = new ComboBox { Left = lblEsp.Right + 8, Top = lblEsp.Top - 3, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
-
-            var lblMes = new Label { Text = "Mes:", Left = cbEspecialidad.Right + 12, Top = lblEsp.Top, AutoSize = true };
-            dtpGestionMonth = new DateTimePicker
-            {
-                Format = DateTimePickerFormat.Custom,
-                CustomFormat = "MMMM yyyy",
-                ShowUpDown = true,
-                Left = lblMes.Right + 8,
-                Top = lblEsp.Top - 3,
-                Width = 140,
-                Value = DateTime.Today
-            };
-
-            btnBuscarDisponibles = new Button { Text = "Buscar disponibles", Left = dtpGestionMonth.Right + 12, Top = lblEsp.Top - 3, Width = 140 };
+            
+            btnBuscarDisponibles = new Button { Text = "Buscar disponibles", Left = cbEspecialidad.Right + 12, Top = lblEsp.Top - 3, Width = 140 };
             btnBuscarDisponibles.Click += (s, e) => LoadDisponibles();
 
             pnlGestionTop.Controls.Add(lblEsp);
             pnlGestionTop.Controls.Add(cbEspecialidad);
-            pnlGestionTop.Controls.Add(lblMes);
-            pnlGestionTop.Controls.Add(dtpGestionMonth);
+
             pnlGestionTop.Controls.Add(btnBuscarDisponibles);
 
             // Disponibles grid + reservar button
@@ -150,9 +136,7 @@ namespace ProyectoTurnera.Gui
                 pendientes,
                 id => _turnoController.Cancelar(id));
 
-
         }
-
         private void LoadEspecialidades()
         {
             var especialidades = new BindingList<Especialidad>(_especialidadController.ObtenerTodos());
@@ -162,92 +146,27 @@ namespace ProyectoTurnera.Gui
         }
 
         private void LoadDisponibles()
-        { /*
-            try
-            {
-                if (cbEspecialidad.SelectedValue == null || cbEspecialidad.SelectedValue == DBNull.Value)
-                {
-                    MessageBox.Show("Seleccione una especialidad.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+        {
 
-                int especialidadId = Convert.ToInt32(cbEspecialidad.SelectedValue);
+            var first = DateTime.Today.AddDays(1);
 
-                // Month range (half-open): [monthStart, monthStart.AddMonths(1))
-                var monthStart = new DateTime(dtpGestionMonth.Value.Year, dtpGestionMonth.Value.Month, 1);
-                var monthEndExclusive = monthStart.AddMonths(1);
+            int especialidadId = Convert.ToInt32(cbEspecialidad.SelectedValue);
 
-                // Also ensure we start at tomorrow (>= tomorrow)
-                var minStart = DateTime.Today.AddDays(1);
-                var start = minStart > monthStart ? minStart : monthStart;
-                var end = monthEndExclusive;
+            Especialidad especialidad = _especialidadController.ObtenerPorId(especialidadId);
 
-                // Read patient's Prestador (to compare against turnos.PrestadorMedico)
-                int? prestadorPacienteId = null;
-                try
-                {
-                    var dtPac = BD.Consultar($"SELECT Prestador FROM pacientes WHERE Id = {paciente.Id} LIMIT 1");
-                    if (dtPac != null && dtPac.Rows.Count > 0 && dtPac.Rows[0]["Prestador"] != DBNull.Value)
-                    {
-                        int parsed;
-                        if (int.TryParse(dtPac.Rows[0]["Prestador"].ToString(), out parsed))
-                            prestadorPacienteId = parsed;
-                    }
-                }
-                catch
-                {
-                    // ignore lookup failure — proceed without prestador filter
-                    prestadorPacienteId = null;
-                }
+            BindingList<Turno> disponibles = new BindingList<Turno>(_turnoController.ObtenerFiltrando(first, null, null, null, especialidad, true));
 
-                // Build SQL; add optional filter for PrestadorMedico only if patient has one
-                var sql = @"
-                    SELECT
-                        turnos.Id,
-                        turnos.Fecha,
-                        CONCAT(medicos.Apellido, ', ', medicos.Nombre) AS MedicoNombre,
-                        prestadores_medico.Nombre AS Prestador,
-                        CONCAT(consultorios.Nombre, ' ', consultorios.Direccion, ' ', consultorios.NumeroConsultorio) AS Consultorio,
-                        turnos.PrecioConsulta,
-                        CASE WHEN  turnos.PrestadorMedico = @prestadorPacienteId
-                        THEN ROUND(turnos.PrecioConsulta * 0.5, 2)
-                        ELSE 0 END AS Bonificacion
-                    FROM turnos
-                    JOIN medicos ON medicos.Id = turnos.Medico
-                    JOIN consultorios ON consultorios.Id = turnos.Consultorio
-                    LEFT JOIN prestadores AS prestadores_medico ON prestadores_medico.Id = turnos.PrestadorMedico
-                    WHERE turnos.Paciente IS NULL
-                      AND turnos.Especialidad = @especialidadId
-                      AND turnos.Fecha >= @start
-                      AND turnos.Fecha < @end
-                ";
+            dgvDisponibles.DataSource = disponibles;
 
-                sql += " ORDER BY turnos.Fecha;";
+            GridHelper.AttachCrudHandlers(dgvDisponibles, "disponibles", LoadDisponibles);
 
-                using (var conn = new MySql.Data.MySqlClient.MySqlConnection(BD.cadena))
-                using (var cmd = new MySql.Data.MySqlClient.MySqlCommand(sql, conn))
-                using (var da = new MySql.Data.MySqlClient.MySqlDataAdapter(cmd))
-                {
-                    cmd.Parameters.AddWithValue("@prestadorPacienteId", prestadorPacienteId);
-                    cmd.Parameters.AddWithValue("@especialidadId", especialidadId);
-                    cmd.Parameters.AddWithValue("@start", start);
-                    cmd.Parameters.AddWithValue("@end", end);
-                    if (prestadorPacienteId.HasValue)
-                        cmd.Parameters.AddWithValue("@prestadorPaciente", prestadorPacienteId.Value);
+            GridHelper.ConfigurarColumnasTurnos(dgvDisponibles);
+            GridHelper.ConfigureIdColumn(dgvDisponibles, visible: true, allowEdit: false);
 
-                    var dt = new DataTable();
-                    da.Fill(dt);
-                    dgvDisponibles.DataSource = dt;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al buscar turnos disponibles: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } */
         }
 
         private void ReservarTurnoSeleccionado()
-        { /*
+        { 
             try
             {
                 if (dgvDisponibles.CurrentRow == null)
@@ -265,17 +184,7 @@ namespace ProyectoTurnera.Gui
 
                 int turnoId = Convert.ToInt32(row.Cells["Id"].Value);
 
-                // Get PrestadorPaciente value from pacientes table (if exists)
-                string prestadorPaciente = "NULL";
-                DataTable dtPac = BD.Consultar($"SELECT Prestador FROM pacientes WHERE Id = {paciente.Id}");
-                if (dtPac != null && dtPac.Rows.Count > 0 && dtPac.Rows[0]["Prestador"] != DBNull.Value && dtPac.Rows[0]["Prestador"] != null)
-                {
-                    prestadorPaciente = dtPac.Rows[0]["Prestador"].ToString();
-                }
-
-                // Update turnos to assign paciente
-                string sql = $"UPDATE turnos SET Paciente = {paciente.Id}, PrestadorPaciente = {prestadorPaciente} WHERE Id = {turnoId}";
-                BD.Ejecutar(sql);
+                _turnoController.Reservar(turnoId, this.paciente);
 
                 MessageBox.Show("Turno reservado correctamente.", "Ok", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -286,46 +195,8 @@ namespace ProyectoTurnera.Gui
             catch (Exception ex)
             {
                 MessageBox.Show("Error al reservar turno: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } */
+            } 
         }
 
-        // Handle Delete key to remove selected turnos from DB
-        private void DgvPendientes_KeyDown(object sender, KeyEventArgs e)
-        { /*
-            if (e.KeyCode != Keys.Delete)
-                return;
-
-            if (dgvPendientes.CurrentRow == null)
-                return;
-
-            var rows = dgvPendientes.SelectedRows.Cast<DataGridViewRow>().ToList();
-            if (rows.Count == 0)
-                rows = new List<DataGridViewRow> { dgvPendientes.CurrentRow };
-
-            var count = rows.Count;
-            var confirm = MessageBox.Show($"Eliminar {count} turno(s) seleccionado(s)?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (confirm != DialogResult.Yes)
-                return;
-
-            try
-            {
-                foreach (var r in rows)
-                {
-                    if (r.Cells["Id"] == null || r.Cells["Id"].Value == null)
-                        continue;
-
-                    int id = Convert.ToInt32(r.Cells["Id"].Value);
-                    string sql = $"UPDATE turnos SET Paciente = null, PrestadorPaciente = null WHERE Id = {id}";
-                    BD.Ejecutar(sql);
-                }
-
-                // Refresh grid after deletes
-                LoadPendientes();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al eliminar turnos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } */
-        }
     }
 }
